@@ -100,7 +100,11 @@ const issueOtpFor = async (user: { _id: unknown; email: string }, transaction: I
     expiresAt: new Date(Date.now() + 10 * 60 * 1000),
   }).save();
 
-  await sendOtpEmail(user.email, code, transaction.reference, transaction.amount);
+  // Fire-and-forget: don't make the customer wait on email/SMTP latency (or a
+  // misconfigured SMTP server) before they see the OTP box. sendOtpEmail
+  // already catches its own errors internally and logs them - it never
+  // throws - so this is safe to leave unawaited.
+  sendOtpEmail(user.email, code, transaction.reference, transaction.amount).catch(() => undefined);
 
   return code;
 };
