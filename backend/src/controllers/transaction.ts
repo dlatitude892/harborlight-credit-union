@@ -6,6 +6,7 @@ import Payee from '../models/Payee';
 import OTP from '../models/OTP';
 import asyncHandler from '../utils/asyncHandler';
 import { ApiError } from '../middleware/errorHandler';
+import { sendOtpEmail } from '../utils/mailer';
 
 export const createTransactionSchema = z.object({
   recipientAccountNumber: z.string().min(1),
@@ -83,6 +84,27 @@ export const applyTransactionFunds = async (transaction: ITransaction) => {
 
 const generateReference = () => `TXN-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
 
+/**
+ * Creates the OTP record for a transaction and sends it to the member's
+ * email. Returns the raw code too, purely so it can still be surfaced via
+ * `devOtp` in non-production environments for local testing - in production
+ * the only way to get the code is the email itself.
+ */
+const issueOtpFor = async (user: { _id: unknown; email: string }, transaction: ITransaction) => {
+  const code = generateOtp();
+
+  await new OTP({
+    userId: user._id,
+    transactionId: transaction._id,
+    otp: code,
+    expiresAt: new Date(Date.now() + 10 * 60 * 1000),
+  }).save();
+
+  await sendOtpEmail(user.email, code, transaction.reference, transaction.amount);
+
+  return code;
+};
+
 export const createTransaction = asyncHandler(async (req: Request, res: Response) => {
   const { recipientAccountNumber, amount, currency, transactionType, category, description } = req.body;
 
@@ -124,18 +146,12 @@ export const createTransaction = asyncHandler(async (req: Request, res: Response
 
   await transaction.save();
 
-  const otp = new OTP({
-    userId: req.user!._id,
-    transactionId: transaction._id,
-    otp: generateOtp(),
-    expiresAt: new Date(Date.now() + 10 * 60 * 1000),
-  });
-  await otp.save();
+  const otpCode = await issueOtpFor(sender, transaction);
 
   res.status(201).json({
     transaction,
-    // Dev convenience only - see README for wiring real OTP delivery via nodemailer.
-    devOtp: process.env.NODE_ENV !== 'production' ? otp.otp : undefined,
+    // Dev convenience only - in production the code is only ever delivered by email.
+    devOtp: process.env.NODE_ENV !== 'production' ? otpCode : undefined,
   });
 });
 
@@ -172,30 +188,13 @@ export const createExternalTransaction = asyncHandler(async (req: Request, res: 
 
   await transaction.save();
 
-  const otp = new OTP({
-    userId: req.user!._id,
-    transactionId: transaction._id,
-    otp: generateOtp(),
-    expiresAt: new Date(Date.now() + 10 * 60 * 1000),
-  });
-  await otp.save();
+  const otpCode = await issueOtpFor(sender, transaction);
 
   res.status(201).json({
     transaction,
-    devOtp: process.env.NODE_ENV !== 'production' ? otp.otp : undefined,
+    devOtp: process.env.NODE_ENV !== 'production' ? otpCode : undefined,
   });
 });
-
-const issueOtpFor = async (userId: unknown, transactionId: unknown) => {
-  const otp = new OTP({
-    userId,
-    transactionId,
-    otp: generateOtp(),
-    expiresAt: new Date(Date.now() + 10 * 60 * 1000),
-  });
-  await otp.save();
-  return otp.otp;
-};
 
 export const createBankTransfer = asyncHandler(async (req: Request, res: Response) => {
   const {
@@ -248,7 +247,7 @@ export const createBankTransfer = asyncHandler(async (req: Request, res: Respons
   });
   await transaction.save();
 
-  const otpCode = await issueOtpFor(req.user!._id, transaction._id);
+  const otpCode = await issueOtpFor(sender, transaction);
 
   res.status(201).json({
     transaction,
@@ -291,7 +290,7 @@ export const createP2PTransfer = asyncHandler(async (req: Request, res: Response
   });
   await transaction.save();
 
-  const otpCode = await issueOtpFor(req.user!._id, transaction._id);
+  const otpCode = await issueOtpFor(sender, transaction);
 
   res.status(201).json({
     transaction,
