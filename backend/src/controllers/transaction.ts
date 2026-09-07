@@ -6,7 +6,7 @@ import Payee from '../models/Payee';
 import OTP from '../models/OTP';
 import asyncHandler from '../utils/asyncHandler';
 import { ApiError } from '../middleware/errorHandler';
-import { sendOtpEmail } from '../utils/mailer';
+import { sendOtpEmail, sendReceiptEmail } from '../utils/mailer';
 
 export const createTransactionSchema = z.object({
   recipientAccountNumber: z.string().min(1),
@@ -79,7 +79,43 @@ export const applyTransactionFunds = async (transaction: ITransaction) => {
     session.endSession();
   }
 
+  // Fire-and-forget receipt emails - never let a failed/slow email delay or
+  // break the caller, which is either an OTP-verification response or an
+  // admin action.
+  sendTransactionReceipts(transaction).catch(() => undefined);
+
   return transaction;
+};
+
+const sendTransactionReceipts = async (transaction: ITransaction) => {
+  const [sender, recipient] = await Promise.all([
+    User.findById(transaction.senderId),
+    transaction.method === 'MEMBER' && transaction.recipientId ? User.findById(transaction.recipientId) : null,
+  ]);
+
+  if (sender) {
+    await sendReceiptEmail(sender.email, {
+      direction: 'DEBIT',
+      amount: transaction.amount,
+      reference: transaction.reference,
+      description: transaction.description,
+      category: transaction.category,
+      date: transaction.approvedAt || new Date(),
+      counterpartyName: recipient ? `${recipient.firstName} ${recipient.lastName}` : undefined,
+    });
+  }
+
+  if (recipient) {
+    await sendReceiptEmail(recipient.email, {
+      direction: 'CREDIT',
+      amount: transaction.amount,
+      reference: transaction.reference,
+      description: transaction.description,
+      category: transaction.category,
+      date: transaction.approvedAt || new Date(),
+      counterpartyName: sender ? `${sender.firstName} ${sender.lastName}` : undefined,
+    });
+  }
 };
 
 const generateReference = () => `TXN-${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}`;
