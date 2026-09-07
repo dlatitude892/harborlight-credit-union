@@ -1,35 +1,6 @@
-import nodemailer from 'nodemailer';
-
-let transporter: ReturnType<typeof nodemailer.createTransport> | null = null;
 let warnedMissingConfig = false;
 
-const getTransporter = () => {
-  if (transporter) return transporter;
-
-  const { SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS } = process.env;
-
-  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
-    if (!warnedMissingConfig) {
-      console.warn(
-        '[mailer] SMTP_HOST/SMTP_USER/SMTP_PASS are not fully set - emails will not be sent. ' +
-          'See README for setup instructions.'
-      );
-      warnedMissingConfig = true;
-    }
-    return null;
-  }
-
-  transporter = nodemailer.createTransport({
-    host: SMTP_HOST,
-    port: Number(SMTP_PORT) || 587,
-    secure: Number(SMTP_PORT) === 465,
-    auth: { user: SMTP_USER, pass: SMTP_PASS },
-  });
-
-  return transporter;
-};
-
-const fromAddress = () => process.env.SMTP_FROM || 'Harborlight Credit Union <no-reply@harborlight.example>';
+const fromAddress = () => process.env.EMAIL_FROM || 'Harborlight Credit Union <onboarding@resend.dev>';
 
 const otpEmailHtml = (otp: string, reference: string, amount: number) => `
   <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; color: #14261e;">
@@ -54,16 +25,37 @@ const otpEmailHtml = (otp: string, reference: string, amount: number) => `
 `;
 
 export const sendOtpEmail = async (to: string, otp: string, reference: string, amount: number) => {
-  const client = getTransporter();
-  if (!client) return false;
+  const apiKey = process.env.RESEND_API_KEY;
+
+  if (!apiKey) {
+    if (!warnedMissingConfig) {
+      console.warn('[mailer] RESEND_API_KEY is not set - emails will not be sent. See README for setup instructions.');
+      warnedMissingConfig = true;
+    }
+    return false;
+  }
 
   try {
-    await client.sendMail({
-      from: fromAddress(),
-      to,
-      subject: `Your Harborlight verification code: ${otp}`,
-      html: otpEmailHtml(otp, reference, amount),
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: fromAddress(),
+        to,
+        subject: `Your Harborlight verification code: ${otp}`,
+        html: otpEmailHtml(otp, reference, amount),
+      }),
     });
+
+    if (!response.ok) {
+      const body = await response.text();
+      console.error(`[mailer] Resend API error (${response.status}):`, body);
+      return false;
+    }
+
     return true;
   } catch (error) {
     console.error('[mailer] Failed to send OTP email:', error);
