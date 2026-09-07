@@ -1049,6 +1049,10 @@
     color: var(--pg-green-dark);
     cursor: pointer;
   }
+  .pg-mobile-toggle svg {
+    width: 20px;
+    height: 20px;
+  }
   .pg-hero h1 {
     font-size: 30px;
   }

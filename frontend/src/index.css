@@ -337,6 +337,10 @@ select {
   color: var(--text-primary);
   cursor: pointer;
 }
+.mobile-menu-btn svg {
+  width: 20px;
+  height: 20px;
+}
 
 .page-heading h1 {
   font-family: var(--font-display);
@@ -1806,6 +1810,10 @@ tr:hover td {
   cursor: pointer;
   margin-left: auto;
   flex-shrink: 0;
+}
+.admin-mobile-toggle svg {
+  width: 20px;
+  height: 20px;
 }
 .admin-mobile-panel {
   display: flex;
