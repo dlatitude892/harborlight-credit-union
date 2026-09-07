@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /checking
+Disallow: /savings
+Disallow: /transfer
+Disallow: /bills
+Disallow: /cards
+Disallow: /transactions
+Disallow: /settings
+Disallow: /support
+Disallow: /admin
+
+Sitemap: https://harborlightcreditunion.netlify.app/sitemap.xml
