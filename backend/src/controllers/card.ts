@@ -22,7 +22,7 @@ export const getCards = asyncHandler(async (req: Request, res: Response) => {
       userId: req.user!._id,
       cardholderName: `${req.user!.firstName} ${req.user!.lastName}`.toUpperCase(),
       last4: randomLast4(),
-      brand: 'VISA',
+      brand: 'MASTERCARD',
       cardType: 'DEBIT',
       expMonth: now.getMonth() + 1,
       expYear: now.getFullYear() + 4,

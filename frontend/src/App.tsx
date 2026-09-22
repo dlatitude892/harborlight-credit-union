@@ -1,5 +1,7 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
+import { LanguageProvider } from './context/LanguageContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import ChatWidget from './components/ChatWidget';
@@ -13,6 +15,8 @@ import Checking from './pages/Checking';
 import Savings from './pages/Savings';
 import Cards from './pages/Cards';
 import Bills from './pages/Bills';
+import Deposit from './pages/Deposit';
+import Loans from './pages/Loans';
 import Settings from './pages/Settings';
 import Support from './pages/Support';
 import Privacy from './pages/legal/Privacy';
@@ -31,10 +35,14 @@ import AdminTicketDetail from './pages/AdminTicketDetail';
 import AdminApplications from './pages/AdminApplications';
 import AdminApplicationDetail from './pages/AdminApplicationDetail';
 import AdminChat from './pages/AdminChat';
+import AdminDeposits from './pages/AdminDeposits';
+import AdminAccountRequests from './pages/AdminAccountRequests';
 
 export default function App() {
   return (
-    <AuthProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <AuthProvider>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -89,6 +97,22 @@ export default function App() {
           element={
             <ProtectedRoute>
               <Cards />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/deposit"
+          element={
+            <ProtectedRoute>
+              <Deposit />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/loans"
+          element={
+            <ProtectedRoute>
+              <Loans />
             </ProtectedRoute>
           }
         />
@@ -213,11 +237,29 @@ export default function App() {
             </AdminRoute>
           }
         />
+        <Route
+          path="/admin/deposits"
+          element={
+            <AdminRoute>
+              <AdminDeposits />
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/admin/account-requests"
+          element={
+            <AdminRoute>
+              <AdminAccountRequests />
+            </AdminRoute>
+          }
+        />
 
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <ChatWidgetGate />
     </AuthProvider>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 

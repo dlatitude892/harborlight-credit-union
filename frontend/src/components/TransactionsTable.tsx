@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import type { Transaction, TransactionParty } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { downloadTransactionReceipt } from '../utils/receipt';
 import { IconDownload } from './icons';
+import TransactionDetailModal from './TransactionDetailModal';
 
 interface TransactionsTableProps {
   transactions: Transaction[];
@@ -45,6 +47,7 @@ const describe = (txn: Transaction, isOutgoing: boolean) =>
 
 export default function TransactionsTable({ transactions }: TransactionsTableProps) {
   const { user } = useAuth();
+  const [detailTxn, setDetailTxn] = useState<Transaction | null>(null);
 
   if (transactions.length === 0) {
     return (
@@ -73,7 +76,7 @@ export default function TransactionsTable({ transactions }: TransactionsTablePro
             const senderId = typeof txn.senderId === 'string' ? txn.senderId : txn.senderId._id;
             const isOutgoing = senderId === user?.id;
             return (
-              <tr key={txn._id}>
+              <tr key={txn._id} className="txn-clickable-row" onClick={() => setDetailTxn(txn)}>
                 <td>
                   <div className="txn-desc">{describe(txn, isOutgoing)}</div>
                   <div className="txn-meta">{txn.reference}</div>
@@ -91,7 +94,10 @@ export default function TransactionsTable({ transactions }: TransactionsTablePro
                   <button
                     className="icon-btn"
                     aria-label="Download receipt"
-                    onClick={() => user && downloadTransactionReceipt(txn, user.accountNumber)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      user && downloadTransactionReceipt(txn, user.accountNumber);
+                    }}
                   >
                     <IconDownload />
                   </button>
@@ -109,7 +115,7 @@ export default function TransactionsTable({ transactions }: TransactionsTablePro
           const senderId = typeof txn.senderId === 'string' ? txn.senderId : txn.senderId._id;
           const isOutgoing = senderId === user?.id;
           return (
-            <div className="txn-mobile-card" key={txn._id}>
+            <div className="txn-mobile-card txn-clickable-row" key={txn._id} onClick={() => setDetailTxn(txn)}>
               <div className="txn-mobile-top">
                 <div className="txn-mobile-title">
                   <div className="txn-desc">{describe(txn, isOutgoing)}</div>
@@ -128,7 +134,10 @@ export default function TransactionsTable({ transactions }: TransactionsTablePro
                 <button
                   className="icon-btn"
                   aria-label="Download receipt"
-                  onClick={() => user && downloadTransactionReceipt(txn, user.accountNumber)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    user && downloadTransactionReceipt(txn, user.accountNumber);
+                  }}
                 >
                   <IconDownload />
                 </button>
@@ -137,6 +146,8 @@ export default function TransactionsTable({ transactions }: TransactionsTablePro
           );
         })}
       </div>
+
+      {detailTxn && <TransactionDetailModal transaction={detailTxn} onClose={() => setDetailTxn(null)} />}
     </div>
   );
 }

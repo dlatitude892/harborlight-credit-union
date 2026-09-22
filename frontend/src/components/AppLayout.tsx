@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from 'react';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
+import BottomNav from './BottomNav';
 
 interface AppLayoutProps {
   title: string;
@@ -18,6 +19,7 @@ export default function AppLayout({ title, subtitle, children }: AppLayoutProps)
         <Topbar title={title} subtitle={subtitle} onMenuClick={() => setMenuOpen(true)} />
         {children}
       </main>
+      <BottomNav />
     </div>
   );
 }

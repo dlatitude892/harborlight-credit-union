@@ -63,6 +63,11 @@ export const listLoanApplications = asyncHandler(async (req: Request, res: Respo
   res.json(applications);
 });
 
+export const getMyLoanApplications = asyncHandler(async (req: Request, res: Response) => {
+  const applications = await LoanApplication.find({ userId: req.user!._id }).sort({ createdAt: -1 });
+  res.json(applications);
+});
+
 export const getLoanApplication = asyncHandler(async (req: Request, res: Response) => {
   const application = await LoanApplication.findById(req.params.id);
   if (!application) {

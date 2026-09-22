@@ -1,5 +1,6 @@
 import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { useLanguage } from '../context/LanguageContext';
 import {
   IconHome,
   IconWallet,
@@ -11,22 +12,26 @@ import {
   IconSupport,
   IconAnchorMark,
   IconClose,
+  IconDeposit,
+  IconTrendingUp,
 } from './icons';
 import { IconPiggyBank } from './marketing-icons';
 
 const links = [
-  { to: '/dashboard', label: 'Dashboard', icon: IconHome, end: true },
-  { to: '/checking', label: 'Checking', icon: IconWallet },
-  { to: '/savings', label: 'Savings', icon: IconPiggyBank },
-  { to: '/transfer', label: 'Transfers', icon: IconSwap },
-  { to: '/bills', label: 'Pay Bills / P2P', icon: IconBill },
-  { to: '/cards', label: 'Cards', icon: IconCard },
-  { to: '/transactions', label: 'Transactions', icon: IconHistory },
+  { to: '/dashboard', labelKey: 'nav.dashboard', icon: IconHome, end: true },
+  { to: '/checking', labelKey: 'nav.checking', icon: IconWallet },
+  { to: '/savings', labelKey: 'nav.savings', icon: IconPiggyBank },
+  { to: '/transfer', labelKey: 'nav.transfers', icon: IconSwap },
+  { to: '/deposit', labelKey: 'nav.deposit', icon: IconDeposit },
+  { to: '/bills', labelKey: 'nav.bills', icon: IconBill },
+  { to: '/loans', labelKey: 'nav.loans', icon: IconTrendingUp },
+  { to: '/cards', labelKey: 'nav.cards', icon: IconCard },
+  { to: '/transactions', labelKey: 'nav.transactions', icon: IconHistory },
 ];
 
 const secondaryLinks = [
-  { to: '/settings', label: 'Settings', icon: IconSettings },
-  { to: '/support', label: 'Support', icon: IconSupport },
+  { to: '/settings', labelKey: 'nav.settings', icon: IconSettings },
+  { to: '/support', labelKey: 'nav.support', icon: IconSupport },
 ];
 
 interface SidebarProps {
@@ -36,6 +41,7 @@ interface SidebarProps {
 
 export default function Sidebar({ open, onClose }: SidebarProps) {
   const { user, logout } = useAuth();
+  const { t } = useLanguage();
 
   const initials = user ? `${user.firstName[0]}${user.lastName[0]}` : '';
 
@@ -61,25 +67,25 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         </button>
       </div>
 
-      <div className="nav-section-label">Banking</div>
+      <div className="nav-section-label">{t('nav.banking')}</div>
       <ul className="nav-list">
-        {links.map(({ to, label, icon: Icon, end }) => (
+        {links.map(({ to, labelKey, icon: Icon, end }) => (
           <li key={to}>
             <NavLink to={to} end={end} className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} onClick={onClose}>
               <Icon />
-              <span>{label}</span>
+              <span>{t(labelKey)}</span>
             </NavLink>
           </li>
         ))}
       </ul>
 
-      <div className="nav-section-label">Member</div>
+      <div className="nav-section-label">{t('nav.member')}</div>
       <ul className="nav-list">
-        {secondaryLinks.map(({ to, label, icon: Icon }) => (
+        {secondaryLinks.map(({ to, labelKey, icon: Icon }) => (
           <li key={to}>
             <NavLink to={to} className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} onClick={onClose}>
               <Icon />
-              <span>{label}</span>
+              <span>{t(labelKey)}</span>
             </NavLink>
           </li>
         ))}
@@ -87,7 +93,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           <li>
             <NavLink to="/admin" className="nav-link" onClick={onClose}>
               <IconSettings />
-              <span>Admin portal</span>
+              <span>{t('nav.adminPortal')}</span>
             </NavLink>
           </li>
         )}
@@ -104,7 +110,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           </div>
         </div>
         <button className="logout-btn" onClick={logout}>
-          Sign out
+          {t('nav.signOut')}
         </button>
       </div>
     </aside>

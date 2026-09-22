@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react';
 import AppLayout from '../components/AppLayout';
 import AccountNoticeBanner from '../components/AccountNoticeBanner';
 import StatCard from '../components/StatCard';
+import TransferReview from '../components/TransferReview';
 import { api } from '../api/client';
 import type { SavingsAccount as SavingsAccountType, SavingsTransaction } from '../types';
 import { IconWallet } from '../components/icons';
@@ -19,6 +20,7 @@ export default function Savings() {
 
   const [direction, setDirection] = useState<'TO_SAVINGS' | 'TO_CHECKING'>('TO_SAVINGS');
   const [amount, setAmount] = useState('');
+  const [step, setStep] = useState<'form' | 'review'>('form');
   const [transferring, setTransferring] = useState(false);
   const [success, setSuccess] = useState<string | null>(null);
 
@@ -48,8 +50,14 @@ export default function Savings() {
     }
   };
 
-  const handleTransfer = async (e: FormEvent) => {
+  const startReview = (e: FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setSuccess(null);
+    setStep('review');
+  };
+
+  const confirmTransfer = async () => {
     setError(null);
     setSuccess(null);
     setTransferring(true);
@@ -57,9 +65,11 @@ export default function Savings() {
       await api.post('/savings/transfer', { direction, amount: parseFloat(amount) });
       setSuccess('Transfer complete.');
       setAmount('');
+      setStep('form');
       await load();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unable to complete transfer');
+      setStep('form');
     } finally {
       setTransferring(false);
     }
@@ -115,35 +125,47 @@ export default function Savings() {
       <div className="section-header">
         <h2 className="section-title">Move money</h2>
       </div>
-      <div className="card" style={{ padding: 24, maxWidth: 420, marginBottom: 28 }}>
-        {success && <div className="form-success">{success}</div>}
-        {error && <div className="form-error">{error}</div>}
-        <form onSubmit={handleTransfer}>
-          <div className="field">
-            <label htmlFor="direction">Direction</label>
-            <select id="direction" value={direction} onChange={(e) => setDirection(e.target.value as typeof direction)}>
-              <option value="TO_SAVINGS">Checking → Savings</option>
-              <option value="TO_CHECKING">Savings → Checking</option>
-            </select>
-          </div>
-          <div className="field">
-            <label htmlFor="amount">Amount (USD)</label>
-            <input
-              id="amount"
-              type="number"
-              min="0.01"
-              step="0.01"
-              required
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="0.00"
-            />
-          </div>
-          <button className="btn btn-primary" type="submit" disabled={transferring}>
-            {transferring ? 'Transferring…' : 'Transfer'}
-          </button>
-        </form>
-      </div>
+      {step === 'review' ? (
+        <div style={{ maxWidth: 420, marginBottom: 28 }}>
+          <TransferReview
+            amount={parseFloat(amount) || 0}
+            rows={[{ label: 'Direction', value: direction === 'TO_SAVINGS' ? 'Checking → Savings' : 'Savings → Checking' }]}
+            submitting={transferring}
+            onConfirm={confirmTransfer}
+            onEdit={() => setStep('form')}
+          />
+        </div>
+      ) : (
+        <div className="card" style={{ padding: 24, maxWidth: 420, marginBottom: 28 }}>
+          {success && <div className="form-success">{success}</div>}
+          {error && <div className="form-error">{error}</div>}
+          <form onSubmit={startReview}>
+            <div className="field">
+              <label htmlFor="direction">Direction</label>
+              <select id="direction" value={direction} onChange={(e) => setDirection(e.target.value as typeof direction)}>
+                <option value="TO_SAVINGS">Checking → Savings</option>
+                <option value="TO_CHECKING">Savings → Checking</option>
+              </select>
+            </div>
+            <div className="field">
+              <label htmlFor="amount">Amount (USD)</label>
+              <input
+                id="amount"
+                type="number"
+                min="0.01"
+                step="0.01"
+                required
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="0.00"
+              />
+            </div>
+            <button className="btn btn-primary" type="submit">
+              Continue
+            </button>
+          </form>
+        </div>
+      )}
 
       <div className="section-header">
         <h2 className="section-title">Savings activity</h2>

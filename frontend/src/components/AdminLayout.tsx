@@ -14,6 +14,8 @@ const navItems = [
   { to: '/admin/users', label: 'Members' },
   { to: '/admin/applications', label: 'Applications' },
   { to: '/admin/transactions', label: 'Pending transactions' },
+  { to: '/admin/deposits', label: 'Check deposits' },
+  { to: '/admin/account-requests', label: 'Account requests' },
   { to: '/admin/loan-applications', label: 'Loan applications' },
   { to: '/admin/tickets', label: 'Customer care' },
   { to: '/admin/chat', label: 'Live chat' },

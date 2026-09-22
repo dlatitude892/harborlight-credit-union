@@ -293,3 +293,42 @@ since `FLAGGED` and `BLOCKED` are no longer valid values going forward.
   every ~4 seconds) rather than a full WebSocket push server - it works and
   feels close to real-time, but a true instant-push implementation would be
   a larger follow-up (Socket.IO or similar) if you want that later.
+
+## Transfer confirmation, transaction details, translation, dark mode, four transfer types, and notifications
+
+- **Transfer confirmation step** - every transfer flow (internal, inter-account,
+  local, international, and P2P/bill pay) now shows a review screen with the
+  full entered details before anything is actually sent, with Edit and
+  Confirm & Send buttons (`components/TransferReview.tsx`).
+- **Clickable transaction history** - clicking any row in the main
+  transactions table (desktop or mobile) opens a detail modal with the full
+  breakdown and a receipt download button
+  (`components/TransactionDetailModal.tsx`).
+- **Language switcher** - a working `LanguageContext` + translation
+  dictionaries for English, Spanish, and French
+  (`i18n/translations.ts`), with a switcher in the sidebar footer and on
+  the login page. **Scope note:** this covers the app's navigation, common
+  actions, and the login/transfer/notification text - translating every
+  string on every admin screen and every page would mean rewriting
+  hundreds of strings across 40+ files, which is out of scope for this
+  pass. The foundation (`useLanguage()` + `t('key')`) is fully wired up
+  and ready to extend to more pages/keys as needed.
+- **Light/dark mode** - a full dark theme (`[data-theme='dark']` in
+  `index.css`) with a toggle in the sidebar footer, persisted to
+  localStorage and defaulting to the visitor's OS preference on first
+  visit.
+- **Four active transfer types** on the Transfers page: Internal (member to
+  member), Inter-account (checking ↔ savings), Local (domestic bank wire),
+  and International (bank wire with SWIFT/BIC) - all functional, reusing
+  the existing transfer endpoints. Local vs. International now tag the
+  transaction's category distinctly so they're identifiable in history
+  (small backend addition: `bank-transfer` accepts an optional `category`
+  field).
+- **Notification bell** in the topbar, showing recent transaction status
+  changes (approved/rejected/blocked/on hold/pending) and the account
+  notice, with an unread indicator and "mark all as read"
+  (`components/NotificationBell.tsx`). **Scope note:** this is derived
+  from data you already have (transactions + account notice) rather than
+  a separate persisted notification system with server-side read/unread
+  state - that would be a legitimately bigger, separate feature if you
+  want push-style real-time notifications later.

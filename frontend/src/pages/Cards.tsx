@@ -44,7 +44,10 @@ export default function Cards() {
           <div className="cards-columns" key={card._id}>
             <div>
               <CardVisual card={card} revealed={revealed} />
-              <button className="btn btn-ghost" style={{ marginTop: 16, width: '100%' }} onClick={() => setRevealed((r) => !r)}>
+              <p className="text-secondary" style={{ fontSize: 12, textAlign: 'center', marginTop: 10 }}>
+                Tap the card to flip it over
+              </p>
+              <button className="btn btn-ghost" style={{ marginTop: 6, width: '100%' }} onClick={() => setRevealed((r) => !r)}>
                 {revealed ? 'Hide card number' : 'Reveal card number'}
               </button>
             </div>

@@ -26,6 +26,8 @@ export interface IUser extends Document {
   accountNumber: string;
   balance: number;
   accountStatus: AccountStatus;
+  kycStatus: 'UNVERIFIED' | 'PENDING' | 'VERIFIED' | 'REJECTED';
+  transactionLimit: number;
   // Shown to the customer on their dashboard when accountStatus !== 'ACTIVE'.
   // Distinct from adminNotes, which are never exposed to the customer.
   customerNotice?: string;
@@ -77,6 +79,15 @@ const UserSchema: Schema = new Schema(
       type: String,
       enum: ['ACTIVE', 'UNDER_REVIEW', 'RESTRICTED', 'FROZEN', 'CLOSED'],
       default: 'ACTIVE',
+    },
+    kycStatus: {
+      type: String,
+      enum: ['UNVERIFIED', 'PENDING', 'VERIFIED', 'REJECTED'],
+      default: 'UNVERIFIED',
+    },
+    transactionLimit: {
+      type: Number,
+      default: 5000,
     },
     customerNotice: { type: String, trim: true },
     adminNotes: [

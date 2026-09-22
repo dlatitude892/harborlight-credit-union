@@ -53,6 +53,8 @@ const serializeUser = (user: IUser) => ({
   accountNumber: user.accountNumber,
   role: user.role,
   accountStatus: user.accountStatus,
+  kycStatus: user.kycStatus,
+  transactionLimit: user.transactionLimit,
   customerNotice: user.customerNotice,
   balance: user.balance,
   createdAt: user.createdAt,
@@ -156,6 +158,59 @@ export const getProfile = asyncHandler(async (req: Request, res: Response) => {
   if (!user) {
     throw new ApiError(404, 'User not found');
   }
+
+  res.json(serializeUser(user));
+});
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1),
+  newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+});
+
+export const changePassword = asyncHandler(async (req: Request, res: Response) => {
+  const { currentPassword, newPassword } = req.body;
+
+  const user = await User.findById(req.user!._id).select('+password');
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  const isMatch = await user.comparePassword(currentPassword);
+  if (!isMatch) {
+    throw new ApiError(400, 'Current password is incorrect');
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  res.json({ message: 'Password updated' });
+});
+
+export const changeEmailSchema = z.object({
+  currentPassword: z.string().min(1),
+  newEmail: z.string().email(),
+});
+
+export const changeEmail = asyncHandler(async (req: Request, res: Response) => {
+  const { currentPassword, newEmail } = req.body;
+
+  const user = await User.findById(req.user!._id).select('+password');
+  if (!user) {
+    throw new ApiError(404, 'User not found');
+  }
+
+  const isMatch = await user.comparePassword(currentPassword);
+  if (!isMatch) {
+    throw new ApiError(400, 'Current password is incorrect');
+  }
+
+  const existing = await User.findOne({ email: newEmail });
+  if (existing && existing._id.toString() !== user._id.toString()) {
+    throw new ApiError(400, 'That email is already in use');
+  }
+
+  user.email = newEmail;
+  await user.save();
 
   res.json(serializeUser(user));
 });

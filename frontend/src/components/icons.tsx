@@ -132,3 +132,80 @@ export const IconAnchorMark = (p: SVGProps<SVGSVGElement>) => (
     <path d="M4 14h4M16 14h4" />
   </svg>
 );
+
+export const IconBell = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9" />
+    <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+  </svg>
+);
+
+export const IconGlobe = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M3 12h18" />
+    <path d="M12 3c2.5 2.7 3.8 6 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-6-3.8-9s1.3-6.3 3.8-9Z" />
+  </svg>
+);
+
+export const IconSun = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <circle cx="12" cy="12" r="4.2" />
+    <path d="M12 2.5v2.2" />
+    <path d="M12 19.3v2.2" />
+    <path d="M4.4 4.4l1.6 1.6" />
+    <path d="M18 18l1.6 1.6" />
+    <path d="M2.5 12h2.2" />
+    <path d="M19.3 12h2.2" />
+    <path d="M4.4 19.6l1.6-1.6" />
+    <path d="M18 6l1.6-1.6" />
+  </svg>
+);
+
+export const IconMoon = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a6.8 6.8 0 0 0 10.5 10.5Z" />
+  </svg>
+);
+
+export const IconCheck = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M5 12.5l4.5 4.5L19 7" />
+  </svg>
+);
+
+export const IconChevronDown = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="m6 9 6 6 6-6" />
+  </svg>
+);
+
+export const IconDeposit = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <rect x="3" y="5" width="18" height="13" rx="2" />
+    <path d="m3 8 9 6 9-6" />
+    <path d="M12 11v6" />
+    <path d="m9 15 3 2 3-2" />
+  </svg>
+);
+
+export const IconUser = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <circle cx="12" cy="8" r="3.6" />
+    <path d="M5 20c1.2-3.6 4-5.5 7-5.5s5.8 1.9 7 5.5" />
+  </svg>
+);
+
+export const IconShieldCheck = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M12 3l7 3v6c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6l7-3Z" />
+    <path d="m9 12 2 2 4-4" />
+  </svg>
+);
+
+export const IconTrendingUp = (p: SVGProps<SVGSVGElement>) => (
+  <svg {...base(p)}>
+    <path d="M3 17l6-6 4 4 8-8" />
+    <path d="M15 7h6v6" />
+  </svg>
+);

@@ -31,6 +31,8 @@ interface AuthContextValue {
   register: (data: RegisterPayload) => Promise<void>;
   logout: () => void;
   refreshProfile: () => Promise<void>;
+  changePassword: (currentPassword: string, newPassword: string) => Promise<void>;
+  changeEmail: (currentPassword: string, newEmail: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -95,9 +97,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   }, []);
 
+  const changePassword = useCallback(async (currentPassword: string, newPassword: string) => {
+    await api.patch('/auth/password', { currentPassword, newPassword });
+  }, []);
+
+  const changeEmail = useCallback(async (currentPassword: string, newEmail: string) => {
+    const updated = await api.patch<User>('/auth/email', { currentPassword, newEmail });
+    setUser(updated);
+  }, []);
+
   const value = useMemo(
-    () => ({ user, loading, error, login, register, logout, refreshProfile }),
-    [user, loading, error, login, register, logout, refreshProfile]
+    () => ({ user, loading, error, login, register, logout, refreshProfile, changePassword, changeEmail }),
+    [user, loading, error, login, register, logout, refreshProfile, changePassword, changeEmail]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

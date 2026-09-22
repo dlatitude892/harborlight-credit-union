@@ -16,6 +16,8 @@ import loanApplicationRoutes from './routes/loanApplication';
 import customerCareRoutes from './routes/customerCare';
 import savingsRoutes from './routes/savings';
 import chatRoutes from './routes/chat';
+import depositRoutes from './routes/deposit';
+import accountRequestRoutes from './routes/accountRequest';
 import { notFound, errorHandler } from './middleware/errorHandler';
 import { apiLimiter } from './middleware/rateLimiter';
 
@@ -36,7 +38,7 @@ app.use(
   })
 );
 
-app.use(express.json({ limit: '100kb' }));
+app.use(express.json({ limit: '6mb' }));
 app.use(apiLimiter);
 
 app.get('/api/health', (_req, res) => {
@@ -53,6 +55,8 @@ app.use('/api/loan-applications', loanApplicationRoutes);
 app.use('/api/customer-care', customerCareRoutes);
 app.use('/api/savings', savingsRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/deposits', depositRoutes);
+app.use('/api/account-requests', accountRequestRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

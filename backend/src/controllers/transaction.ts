@@ -34,6 +34,7 @@ export const bankTransferSchema = z.object({
   recipientAddress: z.string().optional().default(''),
   amount: z.number().positive(),
   description: z.string().optional().default(''),
+  category: z.string().optional().default('Bank transfer'),
 });
 
 export const p2pTransferSchema = z.object({
@@ -157,6 +158,13 @@ export const createTransaction = asyncHandler(async (req: Request, res: Response
     throw new ApiError(400, 'Insufficient funds');
   }
 
+  if (amount > sender.transactionLimit) {
+    throw new ApiError(
+      400,
+      `This exceeds your transaction limit of $${sender.transactionLimit.toFixed(2)}. Request a limit upgrade from Settings.`
+    );
+  }
+
   const recipient = await User.findOne({ accountNumber: recipientAccountNumber.trim() });
   if (!recipient) {
     throw new ApiError(404, 'No member found with that member ID');
@@ -207,6 +215,13 @@ export const createExternalTransaction = asyncHandler(async (req: Request, res: 
     throw new ApiError(400, 'Insufficient funds');
   }
 
+  if (amount > sender.transactionLimit) {
+    throw new ApiError(
+      400,
+      `This exceeds your transaction limit of $${sender.transactionLimit.toFixed(2)}. Request a limit upgrade from Settings.`
+    );
+  }
+
   const payee = await Payee.findOne({ _id: payeeId, userId: req.user!._id });
   if (!payee) {
     throw new ApiError(404, 'Payee not found');
@@ -247,6 +262,7 @@ export const createBankTransfer = asyncHandler(async (req: Request, res: Respons
     recipientAddress,
     amount,
     description,
+    category,
   } = req.body;
 
   const sender = await User.findById(req.user!._id);
@@ -255,6 +271,13 @@ export const createBankTransfer = asyncHandler(async (req: Request, res: Respons
   }
   if (sender.balance < amount) {
     throw new ApiError(400, 'Insufficient funds');
+  }
+
+  if (amount > sender.transactionLimit) {
+    throw new ApiError(
+      400,
+      `This exceeds your transaction limit of $${sender.transactionLimit.toFixed(2)}. Request a limit upgrade from Settings.`
+    );
   }
 
   const payee = new Payee({
@@ -304,6 +327,13 @@ export const createP2PTransfer = asyncHandler(async (req: Request, res: Response
   }
   if (sender.balance < amount) {
     throw new ApiError(400, 'Insufficient funds');
+  }
+
+  if (amount > sender.transactionLimit) {
+    throw new ApiError(
+      400,
+      `This exceeds your transaction limit of $${sender.transactionLimit.toFixed(2)}. Request a limit upgrade from Settings.`
+    );
   }
 
   const payee = new Payee({

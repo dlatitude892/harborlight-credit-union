@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 
-export type TransferMethod = 'MEMBER' | 'BANK_ACCOUNT' | 'CASH_APP' | 'ZELLE' | 'VENMO' | 'PAYPAL';
+export type TransferMethod = 'MEMBER' | 'BANK_ACCOUNT' | 'CASH_APP' | 'ZELLE' | 'VENMO' | 'PAYPAL' | 'CHECK_DEPOSIT';
 
 export interface ITransaction extends Document {
   _id: Types.ObjectId;
@@ -44,7 +44,7 @@ const TransactionSchema: Schema = new Schema(
     },
     method: {
       type: String,
-      enum: ['MEMBER', 'BANK_ACCOUNT', 'CASH_APP', 'ZELLE', 'VENMO', 'PAYPAL'],
+      enum: ['MEMBER', 'BANK_ACCOUNT', 'CASH_APP', 'ZELLE', 'VENMO', 'PAYPAL', 'CHECK_DEPOSIT'],
       default: 'MEMBER',
     },
     amount: {

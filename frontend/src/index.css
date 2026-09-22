@@ -44,6 +44,38 @@
   --sidebar-w: 248px;
 }
 
+[data-theme='dark'] {
+  --bg: #0f1815;
+  --bg-elevated: #16211d;
+  --surface: #16211d;
+  --surface-alt: #1c2a25;
+  --border: #263832;
+  --border-soft: #22322c;
+
+  --text-primary: #eaf3ee;
+  --text-secondary: #a7bbb2;
+  --text-tertiary: #7c9089;
+
+  --accent: #34a973;
+  --accent-strong: #4cc78d;
+  --accent-dim: rgba(52, 169, 115, 0.16);
+
+  --brass: #d3a15a;
+  --brass-dim: rgba(211, 161, 90, 0.16);
+
+  --positive: #34a973;
+  --positive-dim: rgba(52, 169, 115, 0.16);
+  --warning: #d3a15a;
+  --warning-dim: rgba(211, 161, 90, 0.16);
+  --danger: #e0776b;
+  --danger-dim: rgba(224, 119, 107, 0.16);
+
+  --shadow-card: 0 1px 0 rgba(255, 255, 255, 0.03) inset, 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+[data-theme='dark'] body {
+  background-image: radial-gradient(circle at 12% 0%, #182620 0%, var(--bg) 45%);
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -147,7 +179,7 @@ select {
 .sidebar {
   width: var(--sidebar-w);
   flex-shrink: 0;
-  background: linear-gradient(180deg, #ffffff 0%, var(--surface-alt) 100%);
+  background: linear-gradient(180deg, var(--surface) 0%, var(--surface-alt) 100%);
   border-right: 1px solid var(--border-soft);
   display: flex;
   flex-direction: column;
@@ -849,7 +881,7 @@ tr:hover td {
   }
   .main {
     margin-left: 0;
-    padding: 20px 18px 60px;
+    padding: 20px 18px calc(84px + env(safe-area-inset-bottom, 0px));
   }
   .mobile-menu-btn {
     display: flex;
@@ -1490,21 +1522,44 @@ tr:hover td {
 /* ==========================================================================
    Bank card visual
    ========================================================================== */
-.bank-card {
+.bank-card-scene {
   width: 100%;
   max-width: 380px;
-  aspect-ratio: 1.586 / 1;
-  border-radius: 18px;
-  padding: 24px;
+  perspective: 1200px;
+}
+.bank-card-flipper {
   position: relative;
-  background: linear-gradient(135deg, #14263a 0%, #0c1a29 55%, #0a1622 100%);
-  border: 1px solid var(--border);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), 0 1px 0 rgba(255, 255, 255, 0.04) inset;
+  width: 100%;
+  aspect-ratio: 1.586 / 1;
+  transform-style: preserve-3d;
+  transition: transform 0.65s cubic-bezier(0.4, 0.2, 0.2, 1);
+  cursor: pointer;
+}
+.bank-card-flipper.flipped {
+  transform: rotateY(180deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .bank-card-flipper {
+    transition: none;
+  }
+}
+
+.bank-card {
+  width: 100%;
+  height: 100%;
+  border-radius: 18px;
+  padding: 22px 24px;
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  background: linear-gradient(135deg, #1f7a4d 0%, #1c6b45 45%, #123d29 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 20px 46px rgba(10, 40, 25, 0.45), 0 1px 0 rgba(255, 255, 255, 0.08) inset;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   overflow: hidden;
-  color: #e9eef4;
+  color: #f2f8f4;
 }
 .bank-card::before {
   content: '';
@@ -1512,11 +1567,31 @@ tr:hover td {
   inset: 0;
   background-image: repeating-linear-gradient(
     115deg,
-    rgba(255, 255, 255, 0.02) 0,
-    rgba(255, 255, 255, 0.02) 1px,
+    rgba(255, 255, 255, 0.035) 0,
+    rgba(255, 255, 255, 0.035) 1px,
     transparent 1px,
     transparent 34px
   );
+  pointer-events: none;
+}
+.bank-card-blob {
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 65%;
+  height: 140%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.bank-card-sheen {
+  position: absolute;
+  top: -60%;
+  left: -20%;
+  width: 60%;
+  height: 220%;
+  background: linear-gradient(75deg, transparent 0%, rgba(255, 255, 255, 0.14) 45%, transparent 90%);
+  transform: rotate(8deg);
   pointer-events: none;
 }
 .bank-card.frozen {
@@ -1525,7 +1600,7 @@ tr:hover td {
 .bank-card-top {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   position: relative;
 }
 .bank-card-union {
@@ -1533,18 +1608,19 @@ tr:hover td {
   font-size: 15px;
   font-weight: 600;
 }
-.bank-card-type {
-  font-size: 10.5px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--text-tertiary);
+.bank-card-chip-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: relative;
 }
 .bank-card-chip {
   width: 40px;
   height: 30px;
   border-radius: 6px;
-  background: linear-gradient(135deg, #cf9f4f 0%, #a97c33 100%);
+  background: linear-gradient(135deg, #e4c078 0%, #a97c33 100%);
   position: relative;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 .bank-card-chip::after {
   content: '';
@@ -1553,9 +1629,22 @@ tr:hover td {
   border: 1px solid rgba(0, 0, 0, 0.25);
   border-radius: 3px;
 }
+.contactless-icon {
+  width: 22px;
+  height: 22px;
+  color: rgba(255, 255, 255, 0.85);
+  transform: rotate(90deg);
+}
 .bank-card-number {
   font-size: 19px;
   letter-spacing: 0.06em;
+  position: relative;
+}
+.bank-card-valid-thru {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12px;
   position: relative;
 }
 .bank-card-bottom {
@@ -1569,19 +1658,22 @@ tr:hover td {
   font-size: 9.5px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--text-tertiary);
+  color: rgba(255, 255, 255, 0.65);
   margin-bottom: 3px;
 }
 .bank-card-value {
   font-size: 13px;
   font-weight: 600;
 }
-.bank-card-brand {
-  font-family: var(--font-display);
-  font-size: 15px;
+.bank-card-holder {
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.bank-card-type-tag {
+  font-size: 11px;
   font-weight: 700;
-  font-style: italic;
-  margin-left: auto;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.85);
 }
 .bank-card-frozen-badge {
   position: absolute;
@@ -1596,6 +1688,125 @@ tr:hover td {
   text-transform: uppercase;
   padding: 3px 9px;
   border-radius: 20px;
+}
+
+/* ---- Mastercard mark: two overlapping circles ---------------------------*/
+.mastercard-mark {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+.mc-circles {
+  display: flex;
+}
+.mc-circle {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
+.mc-circle-red {
+  background: #eb001b;
+  margin-right: -9px;
+  z-index: 1;
+}
+.mc-circle-yellow {
+  background: #f79e1b;
+  mix-blend-mode: hard-light;
+}
+.mc-wordmark {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.9);
+}
+.mastercard-mark-badge {
+  display: flex;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.mastercard-mark-badge .mc-circle {
+  width: 18px;
+  height: 18px;
+}
+
+/* ---- Back face ------------------------------------------------------------*/
+.bank-card-back {
+  transform: rotateY(180deg);
+  justify-content: flex-start;
+  gap: 12px;
+  padding: 22px 0;
+}
+.bank-card-magstripe {
+  width: 100%;
+  height: 42px;
+  background: #14181f;
+  margin-top: 6px;
+}
+.bank-card-signature-label {
+  padding: 0 24px;
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.6);
+}
+.bank-card-signature-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 24px;
+}
+.bank-card-signature-strip {
+  flex: 1;
+  min-width: 0;
+  height: 34px;
+  background: repeating-linear-gradient(115deg, #dcd6c8 0, #dcd6c8 2px, #e9e4d8 2px, #e9e4d8 4px);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+}
+.bank-card-signature-strip span {
+  font-family: 'Brush Script MT', cursive;
+  font-size: 15px;
+  color: #2a2a2a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bank-card-cvv {
+  background: #fff;
+  color: #14181f;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  padding: 7px 12px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+.bank-card-fineprint {
+  padding: 0 24px;
+  font-size: 10px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.55);
+}
+.bank-card-back-bottom {
+  margin-top: auto;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.bank-card-back-brand {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .card-controls {
@@ -1659,7 +1870,7 @@ tr:hover td {
 
 .cards-columns {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: minmax(260px, 380px) 1fr;
   gap: 40px;
   align-items: start;
 }
@@ -1930,7 +2141,7 @@ tr:hover td {
    Profile header (clean white card on the dashboard)
    ========================================================================== */
 .profile-header {
-  background: #ffffff;
+  background: var(--surface);
   border-radius: var(--radius-lg);
   padding: 24px 28px;
   display: flex;
@@ -1959,7 +2170,7 @@ tr:hover td {
   font-family: var(--font-display);
   font-size: 19px;
   font-weight: 600;
-  color: #16233a;
+  color: var(--text-primary);
 }
 
 .profile-header-meta {
@@ -2301,5 +2512,408 @@ tr:hover td {
   .admin-chat-layout {
     grid-template-columns: 1fr;
     height: auto;
+  }
+}
+
+/* ==========================================================================
+   Language switcher
+   ========================================================================== */
+.lang-switcher {
+  position: relative;
+}
+.lang-switcher-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.lang-switcher-btn svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+.lang-switcher.compact .lang-switcher-btn {
+  padding: 7px;
+  border-radius: 50%;
+}
+.lang-switcher-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.16);
+  overflow: hidden;
+  min-width: 140px;
+  z-index: 150;
+}
+.lang-switcher-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 9px 14px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.lang-switcher-menu button:hover {
+  background: var(--surface-alt);
+}
+.lang-switcher-menu button.active {
+  color: var(--accent-strong);
+  font-weight: 600;
+}
+
+/* ---- Theme toggle --------------------------------------------------------*/
+.theme-toggle-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.theme-toggle-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ==========================================================================
+   Notification bell
+   ========================================================================== */
+.notif-bell-wrap {
+  position: relative;
+}
+.notif-bell-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  cursor: pointer;
+  position: relative;
+}
+.notif-bell-btn svg {
+  width: 18px;
+  height: 18px;
+}
+.notif-bell-dot {
+  position: absolute;
+  top: 6px;
+  right: 7px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
+  border: 2px solid var(--bg-elevated);
+}
+.notif-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 340px;
+  max-width: calc(100vw - 40px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.18);
+  z-index: 150;
+  overflow: hidden;
+}
+.notif-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.notif-panel-header h3 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+}
+.notif-panel-header button {
+  font-size: 11.5px;
+  color: var(--accent-strong);
+  font-weight: 600;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.notif-list {
+  max-height: 360px;
+  overflow-y: auto;
+}
+.notif-item {
+  display: flex;
+  gap: 12px;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--border-soft);
+}
+.notif-item:last-child {
+  border-bottom: none;
+}
+.notif-item-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.notif-item-icon svg {
+  width: 15px;
+  height: 15px;
+}
+.notif-tone-positive {
+  background: var(--positive-dim);
+  color: var(--positive);
+}
+.notif-tone-warning {
+  background: var(--warning-dim);
+  color: var(--warning);
+}
+.notif-tone-danger {
+  background: var(--danger-dim);
+  color: var(--danger);
+}
+.notif-tone-neutral {
+  background: var(--accent-dim);
+  color: var(--accent-strong);
+}
+.notif-item-body p {
+  font-size: 13px;
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+.notif-item-body span {
+  font-size: 11.5px;
+  color: var(--text-tertiary);
+}
+.notif-panel-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+
+@media (max-width: 480px) {
+  .notif-panel {
+    position: fixed;
+    top: 70px;
+    right: 16px;
+    left: 16px;
+    width: auto;
+  }
+}
+
+/* ==========================================================================
+   Transfer type selector + review/confirmation step
+   ========================================================================== */
+.transfer-type-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+.transfer-type-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.transfer-type-card:hover {
+  border-color: var(--accent);
+}
+.transfer-type-card.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-dim);
+  background: var(--accent-dim);
+}
+.transfer-type-card h3 {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+.transfer-type-card p {
+  font-size: 11.5px;
+  color: var(--text-tertiary);
+  line-height: 1.4;
+}
+
+.review-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+.review-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 13.5px;
+}
+.review-row:last-child {
+  border-bottom: none;
+}
+.review-row-label {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+.review-row-value {
+  text-align: right;
+  color: var(--text-primary);
+  font-weight: 500;
+  word-break: break-word;
+}
+.review-amount {
+  text-align: center;
+  padding: 18px 0 20px;
+  border-bottom: 1px solid var(--border-soft);
+  margin-bottom: 4px;
+}
+.review-amount-value {
+  font-family: var(--font-mono);
+  font-size: 30px;
+  font-weight: 600;
+  color: var(--accent-strong);
+}
+.review-amount-label {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+@media (max-width: 760px) {
+  .transfer-type-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ==========================================================================
+   Transaction detail modal
+   ========================================================================== */
+.txn-detail-amount {
+  text-align: center;
+  padding: 6px 0 20px;
+}
+.txn-detail-amount-value {
+  font-family: var(--font-mono);
+  font-size: 32px;
+  font-weight: 700;
+}
+.txn-clickable-row {
+  cursor: pointer;
+}
+.txn-clickable-row:hover {
+  background: var(--surface-alt);
+}
+
+/* ==========================================================================
+   Check deposit upload
+   ========================================================================== */
+.deposit-upload-btn {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 36px 20px;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-alt);
+  color: var(--text-secondary);
+  cursor: pointer;
+  text-align: center;
+  font-size: 13px;
+}
+.deposit-upload-btn:hover {
+  border-color: var(--accent);
+  color: var(--accent-strong);
+}
+.deposit-upload-btn svg {
+  width: 26px;
+  height: 26px;
+}
+.deposit-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.deposit-preview img {
+  max-width: 100%;
+  max-height: 260px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  object-fit: contain;
+  background: var(--surface-alt);
+}
+
+/* ==========================================================================
+   Fixed bottom navigation bar (mobile only, 5 evenly spaced tabs)
+   ========================================================================== */
+.bottom-nav {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .bottom-nav {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 200;
+    background: var(--bg-elevated);
+    border-top: 1px solid var(--border-soft);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+  }
+  .bottom-nav-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 10px 4px 8px;
+    color: var(--text-tertiary);
+  }
+  .bottom-nav-tab svg {
+    width: 21px;
+    height: 21px;
+  }
+  .bottom-nav-tab span {
+    font-size: 10.5px;
+    font-weight: 600;
+  }
+  .bottom-nav-tab.active {
+    color: var(--accent-strong);
   }
 }

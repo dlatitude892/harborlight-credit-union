@@ -1,11 +1,13 @@
 import express from 'express';
-import { adminAuth } from '../middleware/auth';
+import auth, { adminAuth } from '../middleware/auth';
+import optionalAuth from '../middleware/optionalAuth';
 import validate from '../middleware/validate';
 import { apiLimiter } from '../middleware/rateLimiter';
 import {
   submitLoanApplication,
   submitLoanApplicationSchema,
   listLoanApplications,
+  getMyLoanApplications,
   getLoanApplication,
   updateLoanApplicationStatus,
   updateLoanApplicationStatusSchema,
@@ -13,7 +15,8 @@ import {
 
 const router = express.Router();
 
-router.post('/', apiLimiter, validate(submitLoanApplicationSchema), submitLoanApplication);
+router.post('/', apiLimiter, optionalAuth, validate(submitLoanApplicationSchema), submitLoanApplication);
+router.get('/mine', auth, getMyLoanApplications);
 router.get('/', adminAuth, listLoanApplications);
 router.get('/:id', adminAuth, getLoanApplication);
 router.patch('/:id/status', adminAuth, validate(updateLoanApplicationStatusSchema), updateLoanApplicationStatus);

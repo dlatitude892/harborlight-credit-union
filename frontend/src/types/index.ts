@@ -8,6 +8,8 @@ export interface User {
   accountNumber: string;
   role: 'CUSTOMER' | 'ADMIN';
   accountStatus: AccountStatus;
+  kycStatus: 'UNVERIFIED' | 'PENDING' | 'VERIFIED' | 'REJECTED';
+  transactionLimit: number;
   customerNotice?: string;
   balance: number;
   createdAt?: string;
@@ -56,7 +58,7 @@ export interface TransactionParty {
   email?: string;
 }
 
-export type TransferMethod = 'MEMBER' | 'BANK_ACCOUNT' | 'CASH_APP' | 'ZELLE' | 'VENMO' | 'PAYPAL';
+export type TransferMethod = 'MEMBER' | 'BANK_ACCOUNT' | 'CASH_APP' | 'ZELLE' | 'VENMO' | 'PAYPAL' | 'CHECK_DEPOSIT';
 
 export interface PayeeSummary {
   _id: string;
@@ -221,4 +223,29 @@ export interface PaginatedTransactions {
     total: number;
     pages: number;
   };
+}
+
+export interface CheckDeposit {
+  _id: string;
+  userId: string | { firstName: string; lastName: string; accountNumber: string; email: string };
+  reference: string;
+  amount: number;
+  imageUrl?: string;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  adminNote?: string;
+  createdAt: string;
+}
+
+export interface AccountRequest {
+  _id: string;
+  userId: string | { firstName: string; lastName: string; accountNumber: string; email: string; transactionLimit: number; kycStatus: string };
+  type: 'KYC' | 'LIMIT_UPGRADE';
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  idType?: string;
+  idNumberLast4?: string;
+  idImageUrl?: string;
+  requestedLimit?: number;
+  reason?: string;
+  adminNote?: string;
+  createdAt: string;
 }
