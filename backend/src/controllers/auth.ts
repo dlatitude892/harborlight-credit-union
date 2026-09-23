@@ -1,10 +1,13 @@
 import { Request, Response } from 'express';
+import crypto from 'node:crypto';
 import jwt from 'jsonwebtoken';
 import { z } from 'zod';
 import User, { IUser } from '../models/User';
 import AccountApplication from '../models/AccountApplication';
 import asyncHandler from '../utils/asyncHandler';
 import { ApiError } from '../middleware/errorHandler';
+import { loginFailureLimiter } from '../middleware/rateLimiter';
+import { sendNewPasswordEmail } from '../utils/mailer';
 
 export const registerSchema = z.object({
   // Personal
@@ -133,16 +136,26 @@ export const register = asyncHandler(async (req: Request, res: Response) => {
 
 export const login = asyncHandler(async (req: Request, res: Response) => {
   const { email, password } = req.body;
+  const lockoutKey = email.toLowerCase();
+
+  const lockoutState = await loginFailureLimiter.get(lockoutKey);
+  if (lockoutState && lockoutState.remainingPoints <= 0) {
+    throw new ApiError(429, 'Too many failed attempts. Please try again in an hour.');
+  }
 
   const user = await User.findOne({ email }).select('+password');
   if (!user) {
+    await loginFailureLimiter.consume(lockoutKey).catch(() => undefined);
     throw new ApiError(400, 'Invalid credentials');
   }
 
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
+    await loginFailureLimiter.consume(lockoutKey).catch(() => undefined);
     throw new ApiError(400, 'Invalid credentials');
   }
+
+  await loginFailureLimiter.delete(lockoutKey);
 
   if (user.accountStatus === 'CLOSED') {
     throw new ApiError(403, 'This account has been closed. Contact customer care for assistance.');
@@ -151,6 +164,30 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   const token = generateToken(user._id.toString());
 
   res.json({ token, user: serializeUser(user) });
+});
+
+export const forgotPasswordSchema = z.object({
+  email: z.string().email(),
+});
+
+const generateTempPassword = () => crypto.randomBytes(9).toString('base64url');
+
+export const forgotPassword = asyncHandler(async (req: Request, res: Response) => {
+  const { email } = req.body;
+
+  const user = await User.findOne({ email });
+  if (user) {
+    const newPassword = generateTempPassword();
+    user.password = newPassword;
+    await user.save();
+    // Fire-and-forget, same pattern as OTP/receipt emails elsewhere - a slow
+    // or failed send should never block or reveal anything to the response.
+    sendNewPasswordEmail(user.email, newPassword).catch(() => undefined);
+  }
+
+  // Always the same response, whether or not that email is registered -
+  // otherwise this endpoint could be used to check which emails have accounts.
+  res.json({ message: 'If that email is registered, a new password has been sent to it.' });
 });
 
 export const getProfile = asyncHandler(async (req: Request, res: Response) => {

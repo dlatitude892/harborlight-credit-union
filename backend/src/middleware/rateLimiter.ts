@@ -27,3 +27,10 @@ export const transactionLimiter = buildLimiter(20, 60);
 
 // General API limiter applied globally
 export const apiLimiter = buildLimiter(100, 60);
+
+// Failed-login lockout: tracks failed attempts per account, not every
+// request. 4 failed attempts locks that account out of new attempts for an
+// hour. A successful login clears the count. Used directly inside the login
+// controller rather than as middleware, since it needs to know whether the
+// attempt failed - not just that a request was made.
+export const loginFailureLimiter = new RateLimiterMemory({ points: 4, duration: 60 * 60 });

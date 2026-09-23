@@ -3,6 +3,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import ForgotPasswordModal from '../components/ForgotPasswordModal';
+import { IconEye, IconEyeOff } from '../components/icons';
 import '../marketing.css';
 import Logo from '../components/pg/Logo';
 
@@ -12,8 +14,10 @@ export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -58,15 +62,34 @@ export default function Login() {
           </div>
           <div className="pg-field">
             <label htmlFor="password">{t('auth.password')}</label>
-            <input
-              id="password"
-              type="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-            />
+            <div className="pg-password-field">
+              <input
+                id="password"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+              />
+              <button
+                type="button"
+                className="pg-password-toggle"
+                onClick={() => setShowPassword((s) => !s)}
+                aria-label={showPassword ? 'Hide password' : 'Show password'}
+              >
+                {showPassword ? <IconEyeOff /> : <IconEye />}
+              </button>
+            </div>
+          </div>
+          <div style={{ textAlign: 'right', marginBottom: 16, marginTop: -8 }}>
+            <button
+              type="button"
+              onClick={() => setShowForgotPassword(true)}
+              style={{ background: 'none', border: 'none', color: 'var(--pg-green)', fontSize: 13, cursor: 'pointer', padding: 0 }}
+            >
+              Forgot password?
+            </button>
           </div>
           <button className="pg-btn pg-btn-primary" style={{ width: '100%' }} type="submit" disabled={submitting}>
             {submitting ? '…' : t('auth.signIn')}
@@ -77,6 +100,8 @@ export default function Login() {
           {t('auth.newToHarborlight')} <Link to="/register">{t('auth.openAccount')}</Link>
         </div>
       </div>
+
+      {showForgotPassword && <ForgotPasswordModal onClose={() => setShowForgotPassword(false)} />}
     </div>
   );
 }

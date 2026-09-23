@@ -144,3 +144,26 @@ export const sendReceiptEmail = (to: string, opts: ReceiptOptions) =>
     receiptEmailHtml(opts),
     'receipt email'
   );
+
+const newPasswordEmailHtml = (newPassword: string) => `
+  <div style="font-family: Arial, sans-serif; max-width: 480px; margin: 0 auto; color: #14261e;">
+    <div style="background: #14512f; padding: 24px; border-radius: 12px 12px 0 0;">
+      <h1 style="color: #fff; margin: 0; font-size: 18px;">Harborlight Credit Union</h1>
+    </div>
+    <div style="border: 1px solid #dfeee6; border-top: none; padding: 28px 24px; border-radius: 0 0 12px 12px;">
+      <p style="font-size: 15px; margin: 0 0 18px;">
+        We received a request to reset your password. Here's your new temporary password:
+      </p>
+      <div style="font-family: 'Courier New', monospace; font-size: 22px; font-weight: bold; letter-spacing: 1px; text-align: center; background: #eaf6ee; color: #14512f; padding: 16px; border-radius: 8px; margin-bottom: 18px; word-break: break-all;">
+        ${newPassword}
+      </div>
+      <p style="font-size: 13px; color: #4b5d55; margin: 0;">
+        Sign in with this password, then change it right away from Settings. If you didn't request
+        this, contact customer care immediately - your password has already been changed.
+      </p>
+    </div>
+  </div>
+`;
+
+export const sendNewPasswordEmail = (to: string, newPassword: string) =>
+  sendViaResend(to, 'Your new Harborlight password', newPasswordEmailHtml(newPassword), 'password reset email');

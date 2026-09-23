@@ -39,6 +39,7 @@ export default function PgFooter() {
               <a href="/#about">About Us</a>
               <Link to="/privacy">Privacy</Link>
               <Link to="/terms">Terms</Link>
+              <Link to="/cookies">Cookie Policy</Link>
               <Link to="/accessibility">Accessibility</Link>
             </div>
           </div>

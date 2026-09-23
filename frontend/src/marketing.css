@@ -148,6 +148,12 @@
   font-weight: 600;
   color: var(--pg-text-secondary);
 }
+.pg-mobile-panel a.pg-btn-primary {
+  color: #fff;
+}
+.pg-mobile-panel a.pg-btn-ghost {
+  color: var(--pg-green-dark);
+}
 .pg-mobile-actions {
   display: flex;
   gap: 10px;
@@ -1039,19 +1045,18 @@
   .pg-mobile-toggle {
     display: flex;
     margin-left: auto;
-    background: var(--pg-bg-soft);
+    background: none;
     border: none;
     width: 38px;
     height: 38px;
-    border-radius: 10px;
     align-items: center;
     justify-content: center;
     color: var(--pg-green-dark);
     cursor: pointer;
   }
   .pg-mobile-toggle svg {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
   }
   .pg-hero h1 {
     font-size: 30px;
@@ -1070,4 +1075,30 @@
   .pg-modal {
     padding: 22px;
   }
+}
+
+/* ---- Password field with show/hide eye toggle -----------------------------*/
+.pg-password-field {
+  position: relative;
+}
+.pg-password-field input {
+  padding-right: 42px;
+}
+.pg-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: var(--pg-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+.pg-password-toggle svg {
+  width: 18px;
+  height: 18px;
 }
