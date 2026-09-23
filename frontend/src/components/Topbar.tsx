@@ -25,7 +25,7 @@ export default function Topbar({ title, subtitle, onMenuClick }: TopbarProps) {
           {subtitle && <p>{subtitle}</p>}
         </div>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 'auto' }}>
+      <div className="topbar-controls" style={{ display: 'flex', alignItems: 'center', gap: 10, marginLeft: 'auto' }}>
         <LanguageSwitcher compact />
         <button
           className="theme-toggle-btn"

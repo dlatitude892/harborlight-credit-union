@@ -2326,8 +2326,22 @@ tr:hover td {
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 10px 26px rgba(31, 122, 77, 0.35);
-  z-index: 400;
+  z-index: 140;
   transition: transform 0.15s ease;
+  animation: chat-fab-float 3.2s ease-in-out infinite;
+}
+@keyframes chat-fab-float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chat-fab {
+    animation: none;
+  }
 }
 .chat-fab:hover {
   transform: translateY(-2px) scale(1.03);
@@ -2335,6 +2349,14 @@ tr:hover td {
 .chat-fab svg {
   width: 24px;
   height: 24px;
+}
+@media (max-width: 860px) {
+  .chat-fab {
+    bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+    right: 18px;
+    width: 50px;
+    height: 50px;
+  }
 }
 
 .chat-panel {
@@ -2524,15 +2546,18 @@ tr:hover td {
 .lang-switcher-btn {
   display: flex;
   align-items: center;
-  gap: 6px;
-  background: var(--surface-alt);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 6px 12px;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 6px 4px;
   font-size: 12.5px;
   font-weight: 500;
   color: var(--text-secondary);
   cursor: pointer;
+}
+.lang-switcher-code {
+  font-weight: 700;
+  letter-spacing: 0.03em;
 }
 .lang-switcher-btn svg {
   width: 15px;
@@ -2540,8 +2565,7 @@ tr:hover td {
   flex-shrink: 0;
 }
 .lang-switcher.compact .lang-switcher-btn {
-  padding: 7px;
-  border-radius: 50%;
+  padding: 6px 2px;
 }
 .lang-switcher-menu {
   position: absolute;
@@ -2579,11 +2603,11 @@ tr:hover td {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--surface-alt);
-  border: 1px solid var(--border);
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: none;
+  border: none;
   color: var(--text-secondary);
   cursor: pointer;
   flex-shrink: 0;
@@ -2603,11 +2627,11 @@ tr:hover td {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: var(--surface-alt);
-  border: 1px solid var(--border);
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: none;
+  border: none;
   color: var(--text-primary);
   cursor: pointer;
   position: relative;
@@ -2887,14 +2911,40 @@ tr:hover td {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 200;
-    background: var(--bg-elevated);
-    border-top: 1px solid var(--border-soft);
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+    left: 14px;
+    right: 14px;
+    z-index: 150;
+    background: rgba(255, 255, 255, 0.82);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--border-soft);
+    border-radius: 26px;
+    box-shadow: 0 10px 30px rgba(20, 60, 40, 0.16);
+    animation: bottom-nav-rise 0.4s cubic-bezier(0.2, 0.8, 0.3, 1);
+  }
+  [data-theme='dark'] .bottom-nav {
+    background: rgba(22, 33, 29, 0.86);
+  }
+  @keyframes bottom-nav-rise {
+    from {
+      transform: translateY(24px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bottom-nav {
+      animation: none;
+    }
+  }
+  /* Sidebar and bottom-nav are siblings under .app-shell - hide the pill
+     entirely while the mobile menu is open so it never sits on top of the
+     sign-out button in the sidebar's footer. */
+  .sidebar.open ~ .bottom-nav {
+    display: none;
   }
   .bottom-nav-tab {
     display: flex;
@@ -2902,18 +2952,41 @@ tr:hover td {
     align-items: center;
     justify-content: center;
     gap: 3px;
-    padding: 10px 4px 8px;
+    padding: 10px 4px 9px;
     color: var(--text-tertiary);
   }
   .bottom-nav-tab svg {
-    width: 21px;
-    height: 21px;
+    width: 20px;
+    height: 20px;
   }
   .bottom-nav-tab span {
-    font-size: 10.5px;
+    font-size: 10px;
     font-weight: 600;
   }
   .bottom-nav-tab.active {
     color: var(--accent-strong);
+  }
+}
+
+@media (max-width: 640px) {
+  .topbar-controls {
+    gap: 4px !important;
+  }
+  .lang-switcher-btn {
+    padding: 4px 2px;
+    font-size: 11.5px;
+  }
+  .theme-toggle-btn,
+  .notif-bell-btn {
+    width: 26px;
+    height: 26px;
+  }
+  .theme-toggle-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+  .notif-bell-btn svg {
+    width: 16px;
+    height: 16px;
   }
 }

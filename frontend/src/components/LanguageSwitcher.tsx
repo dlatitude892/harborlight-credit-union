@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { languageNames, type Language } from '../i18n/translations';
-import { IconGlobe, IconChevronDown } from './icons';
+import { IconChevronDown } from './icons';
 
 export default function LanguageSwitcher({ compact = false }: { compact?: boolean }) {
   const { language, setLanguage } = useLanguage();
@@ -19,7 +19,7 @@ export default function LanguageSwitcher({ compact = false }: { compact?: boolea
   return (
     <div className={`lang-switcher${compact ? ' compact' : ''}`} ref={ref}>
       <button type="button" className="lang-switcher-btn" onClick={() => setOpen((o) => !o)} aria-label="Change language">
-        <IconGlobe />
+        <span className="lang-switcher-code">{language.toUpperCase()}</span>
         {!compact && <span>{languageNames[language]}</span>}
         <IconChevronDown style={{ width: 13, height: 13 }} />
       </button>
