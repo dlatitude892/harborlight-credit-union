@@ -188,7 +188,7 @@ select {
   bottom: 0;
   left: 0;
   z-index: 100;
-  transition: transform 0.25s ease;
+  transition: transform 0.32s cubic-bezier(0.22, 0.8, 0.32, 1);
 }
 
 .sidebar-brand {
@@ -468,6 +468,19 @@ select {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.admin-summary-grid.cols-5 .stat-value,
+.admin-summary-grid.cols-4 .stat-value {
+  font-size: 19px;
+}
+@media (max-width: 1080px) {
+  .admin-summary-grid.cols-5 .stat-value,
+  .admin-summary-grid.cols-4 .stat-value {
+    font-size: 22px;
+  }
 }
 
 .stat-change {
@@ -2986,5 +2999,60 @@ tr:hover td {
   .notif-bell-btn svg {
     width: 16px;
     height: 16px;
+  }
+}
+
+/* ==========================================================================
+   Mobile sidebar: backdrop fade-in and staggered nav-link entrance
+   ========================================================================== */
+.sidebar-backdrop {
+  display: none;
+}
+
+@media (max-width: 860px) {
+  .sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 95;
+    background: rgba(10, 20, 15, 0.42);
+    animation: sidebar-backdrop-fade 0.25s ease;
+  }
+  @keyframes sidebar-backdrop-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .sidebar.open .nav-list .nav-link {
+    animation: nav-link-in 0.35s ease backwards;
+  }
+  .sidebar.open .nav-list li:nth-child(1) .nav-link { animation-delay: 0.03s; }
+  .sidebar.open .nav-list li:nth-child(2) .nav-link { animation-delay: 0.06s; }
+  .sidebar.open .nav-list li:nth-child(3) .nav-link { animation-delay: 0.09s; }
+  .sidebar.open .nav-list li:nth-child(4) .nav-link { animation-delay: 0.12s; }
+  .sidebar.open .nav-list li:nth-child(5) .nav-link { animation-delay: 0.15s; }
+  .sidebar.open .nav-list li:nth-child(6) .nav-link { animation-delay: 0.18s; }
+  .sidebar.open .nav-list li:nth-child(7) .nav-link { animation-delay: 0.21s; }
+  .sidebar.open .nav-list li:nth-child(8) .nav-link { animation-delay: 0.24s; }
+  .sidebar.open .nav-list li:nth-child(9) .nav-link { animation-delay: 0.27s; }
+  @keyframes nav-link-in {
+    from {
+      opacity: 0;
+      transform: translateX(-14px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sidebar-backdrop,
+    .sidebar.open .nav-list .nav-link {
+      animation: none;
+    }
   }
 }
