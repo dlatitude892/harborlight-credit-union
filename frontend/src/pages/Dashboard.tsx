@@ -8,6 +8,7 @@ import QuickActions from '../components/QuickActions';
 import TransactionsTable from '../components/TransactionsTable';
 import { api } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import { getGreeting } from '../utils/greeting';
 import type { DashboardSummary, PaginatedTransactions, Transaction } from '../types';
 import { IconWallet, IconArrowDown, IconArrowUp } from '../components/icons';
 
@@ -45,7 +46,7 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <AppLayout title={`Good to see you, ${user?.firstName || 'member'}`} subtitle="Here's where things stand today.">
+    <AppLayout title={`${getGreeting()}, ${user?.firstName || 'member'}`} subtitle="Here's where things stand today.">
       {error && <div className="form-error">{error}</div>}
 
       {loading ? (

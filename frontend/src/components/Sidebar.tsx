@@ -46,7 +46,9 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
   const initials = user ? `${user.firstName[0]}${user.lastName[0]}` : '';
 
   return (
-    <aside className={`sidebar${open ? ' open' : ''}`}>
+    <>
+      {open && <div className="sidebar-backdrop" onClick={onClose} />}
+      <aside className={`sidebar${open ? ' open' : ''}`}>
       <div className="sidebar-brand">
         <Link to="/" className="brand-link">
           <div className="brand-mark">
@@ -113,6 +115,7 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
           {t('nav.signOut')}
         </button>
       </div>
-    </aside>
+      </aside>
+    </>
   );
 }
