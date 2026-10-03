@@ -2,6 +2,15 @@
   command = "npm run build"
   publish = "dist"
 
+# Send anyone (and Google) visiting the old netlify.app address to the real
+# domain, so search engines only ever index one copy of the site. Must come
+# before the SPA fallback below - Netlify applies rules top to bottom.
+[[redirects]]
+  from = "https://harborlightcreditunion.netlify.app/*"
+  to = "https://harborlightcreditunion.org/:splat"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
