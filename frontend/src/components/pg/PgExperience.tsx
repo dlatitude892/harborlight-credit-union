@@ -10,7 +10,7 @@ const items = [
   { icon: IconSwap, title: 'Transfers', body: 'Move money between members instantly.' },
   { icon: IconBill, title: 'Bill Payments', body: 'Pay bills via bank transfer, Zelle, and more.' },
   { icon: IconSupport, title: 'Financial Support', body: 'Guidance from real people, not a call tree.' },
-  { icon: IconSupport, title: 'Customer Care', body: 'Reach us by phone, email, or secure message.' },
+  { icon: IconSupport, title: 'Customer Care', body: 'Reach us by email, live chat, or secure message.' },
 ];
 
 export default function PgExperience() {

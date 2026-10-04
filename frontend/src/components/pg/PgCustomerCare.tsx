@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { IconMail, IconPhoneCall } from '../marketing-icons';
+import { IconMail } from '../marketing-icons';
 import CustomerCareModal from './CustomerCareModal';
 import { useReveal } from '../../hooks/useReveal';
 
@@ -21,12 +21,12 @@ export default function PgCustomerCare() {
             Contact Customer Care
           </button>
           <div style={{ display: 'flex', justifyContent: 'center', gap: 30, marginTop: 26, flexWrap: 'wrap' }}>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--pg-text-secondary)' }}>
-              <IconMail style={{ width: 16, height: 16, color: 'var(--pg-green)' }} /> support@harborlight.example
-            </span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--pg-text-secondary)' }}>
-              <IconPhoneCall style={{ width: 16, height: 16, color: 'var(--pg-green)' }} /> 1-800-555-0139
-            </span>
+            <a
+              href="mailto:support@harborlightcreditunion.org"
+              style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--pg-text-secondary)' }}
+            >
+              <IconMail style={{ width: 16, height: 16, color: 'var(--pg-green)' }} /> support@harborlightcreditunion.org
+            </a>
           </div>
         </div>
       </div>

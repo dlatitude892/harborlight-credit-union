@@ -89,7 +89,7 @@ export default function CardVisual({ card, revealed }: CardVisualProps) {
           </div>
 
           <p className="bank-card-fineprint">
-            This card is property of Harborlight Credit Union. If found, please return to any branch or call
+            This card is property of Harborlight Credit Union. If found, please return to any branch or email
             customer care. Use of this card is subject to the cardholder agreement.
           </p>
 
