@@ -10,7 +10,7 @@ export default function PgHero() {
     <section className="pg-hero">
       <div className="pg-container pg-hero-grid">
         <div ref={copy.ref} className={copy.className}>
-          <span className="pg-eyebrow">Member-owned · Federally insured</span>
+          <span className="pg-eyebrow">Member-owned · Online banking</span>
           <h1>
             Banking Made Simpler. <br />
             Your <span>Financial Future</span> Starts Here.

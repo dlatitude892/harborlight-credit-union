@@ -54,7 +54,7 @@ const emptyForm: FormState = {
 export default function Register() {
   usePageMeta({
     title: 'Open an Account',
-    description: 'Open a Harborlight Credit Union membership online in minutes. Checking, high-yield savings, and modern online banking, federally insured.',
+    description: 'Open a Harborlight Credit Union membership online in minutes. Checking, high-yield savings, and modern online banking.',
     path: '/register',
   });
   const { register } = useAuth();

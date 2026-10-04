@@ -45,7 +45,7 @@ export default function SecurityCenter() {
               <IconLock style={{ width: 18, height: 18 }} /> Bank-grade encryption
             </span>
             <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13.5, color: 'var(--pg-green-dark)', fontWeight: 700 }}>
-              <IconShield style={{ width: 18, height: 18 }} /> NCUA insured
+              <IconShield style={{ width: 18, height: 18 }} /> One-time codes on transfers
             </span>
           </div>
         </div>

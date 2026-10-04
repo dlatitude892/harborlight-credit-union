@@ -45,8 +45,7 @@ export default function PgFooter() {
           </div>
         </div>
         <div className="pg-footer-bottom">
-          <span>© {new Date().getFullYear()} Harborlight Credit Union. Federally insured by the NCUA.</span>
-          <span>Equal Housing Lender</span>
+          <span>© {new Date().getFullYear()} Harborlight Credit Union.</span>
         </div>
       </div>
     </footer>

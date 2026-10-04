@@ -129,8 +129,7 @@ const receiptEmailHtml = (opts: ReceiptOptions) => {
           }
         </table>
         <p style="font-size: 12px; color: #7c8f86; margin: 20px 0 0;">
-          Harborlight Credit Union is federally insured by the NCUA. If you don't recognize this
-          transaction, contact customer care immediately.
+          If you don't recognize this transaction, contact customer care immediately.
         </p>
       </div>
     </div>

@@ -5,7 +5,7 @@ import { useReveal } from '../../hooks/useReveal';
 
 const trustItems = [
   { icon: IconLock, title: 'Secure online banking', body: 'Bank-grade encryption on every session.' },
-  { icon: IconShield, title: 'Federally insured', body: 'NCUA insured up to $250,000 per member.' },
+  { icon: IconShield, title: 'Verified transfers', body: 'A one-time code confirms every transfer you send.' },
   { icon: IconSupport, title: 'Real customer support', body: 'Reach a real person, every time.' },
   { icon: IconShield, title: 'Responsible banking', body: 'Member-owned, not shareholder-driven.' },
 ];

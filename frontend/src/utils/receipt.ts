@@ -114,13 +114,7 @@ export function downloadTransactionReceipt(transaction: Transaction, currentUser
 
   doc.setTextColor(...gray);
   doc.setFontSize(9);
-  doc.text(
-    'This receipt is a record of a transaction on your Harborlight Credit Union account. Harborlight Credit Union is',
-    margin,
-    y
-  );
-  y += 13;
-  doc.text('federally insured by the NCUA.', margin, y);
+  doc.text('This receipt is a record of a transaction on your Harborlight Credit Union account.', margin, y);
 
   doc.save(`harborlight-receipt-${transaction.reference}.pdf`);
 }

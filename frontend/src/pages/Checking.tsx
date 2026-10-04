@@ -88,7 +88,7 @@ export default function Checking() {
               <IconShield />
             </span>
             <div style={{ fontSize: 13.5 }} className="text-secondary">
-              No monthly fee, no minimum balance. Federally insured by the NCUA up to $250,000 per member.
+              No monthly fee, no minimum balance.
             </div>
           </div>
 
