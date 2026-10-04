@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { IconAnchorMark, IconMenu, IconClose } from './icons';
+import { usePageMeta } from '../utils/usePageMeta';
 
 interface AdminLayoutProps {
   title: string;
@@ -24,6 +25,7 @@ const navItems = [
 ];
 
 export default function AdminLayout({ title, subtitle, children }: AdminLayoutProps) {
+  usePageMeta({ title });
   const { user, logout } = useAuth();
   const [menuOpen, setMenuOpen] = useState(false);
 

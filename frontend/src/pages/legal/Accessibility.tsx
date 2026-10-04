@@ -1,8 +1,14 @@
 import '../../marketing.css';
 import PgHeader from '../../components/pg/PgHeader';
 import PgFooter from '../../components/pg/PgFooter';
+import { usePageMeta } from '../../utils/usePageMeta';
 
 export default function Accessibility() {
+  usePageMeta({
+    title: 'Accessibility',
+    description: "Harborlight Credit Union's commitment to making our website and online banking accessible to every member.",
+    path: '/accessibility',
+  });
   return (
     <div className="pub-site">
       <PgHeader />

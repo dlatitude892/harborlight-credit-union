@@ -2,8 +2,14 @@ import '../../marketing.css';
 import PgHeader from '../../components/pg/PgHeader';
 import PgFooter from '../../components/pg/PgFooter';
 import { IconLock, IconShield } from '../../components/marketing-icons';
+import { usePageMeta } from '../../utils/usePageMeta';
 
 export default function SecurityCenter() {
+  usePageMeta({
+    title: 'Security Center',
+    description: 'How Harborlight Credit Union protects your accounts, and how to recognize and report fraud and phishing attempts.',
+    path: '/security-center',
+  });
   return (
     <div className="pub-site">
       <PgHeader />

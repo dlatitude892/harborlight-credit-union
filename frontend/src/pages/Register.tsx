@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import '../marketing.css';
 import Logo from '../components/pg/Logo';
+import { usePageMeta } from '../utils/usePageMeta';
 
 const stepLabels = ['Personal Information', 'Address', 'Account & Security', 'Identity & Compliance', 'Review'];
 
@@ -51,6 +52,11 @@ const emptyForm: FormState = {
 };
 
 export default function Register() {
+  usePageMeta({
+    title: 'Open an Account',
+    description: 'Open a Harborlight Credit Union membership online in minutes. Checking, high-yield savings, and modern online banking, federally insured.',
+    path: '/register',
+  });
   const { register } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState(1);

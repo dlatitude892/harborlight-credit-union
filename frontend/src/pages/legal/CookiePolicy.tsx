@@ -1,8 +1,14 @@
 import '../../marketing.css';
 import PgHeader from '../../components/pg/PgHeader';
 import PgFooter from '../../components/pg/PgFooter';
+import { usePageMeta } from '../../utils/usePageMeta';
 
 export default function CookiePolicy() {
+  usePageMeta({
+    title: 'Cookie Policy',
+    description: 'How Harborlight Credit Union uses cookies on its website and online banking platform, and how to manage them.',
+    path: '/cookies',
+  });
   return (
     <div className="pub-site">
       <PgHeader />

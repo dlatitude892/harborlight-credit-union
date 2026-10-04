@@ -2,6 +2,7 @@ import { useState, type ReactNode } from 'react';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
 import BottomNav from './BottomNav';
+import { usePageMeta } from '../utils/usePageMeta';
 
 interface AppLayoutProps {
   title: string;
@@ -10,6 +11,7 @@ interface AppLayoutProps {
 }
 
 export default function AppLayout({ title, subtitle, children }: AppLayoutProps) {
+  usePageMeta({ title });
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (

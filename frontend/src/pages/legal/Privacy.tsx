@@ -1,8 +1,14 @@
 import '../../marketing.css';
 import PgHeader from '../../components/pg/PgHeader';
 import PgFooter from '../../components/pg/PgFooter';
+import { usePageMeta } from '../../utils/usePageMeta';
 
 export default function Privacy() {
+  usePageMeta({
+    title: 'Privacy Policy',
+    description: 'How Harborlight Credit Union collects, uses, and protects your personal and financial information.',
+    path: '/privacy',
+  });
   return (
     <div className="pub-site">
       <PgHeader />

@@ -7,8 +7,14 @@ import ForgotPasswordModal from '../components/ForgotPasswordModal';
 import { IconEye, IconEyeOff } from '../components/icons';
 import '../marketing.css';
 import Logo from '../components/pg/Logo';
+import { usePageMeta } from '../utils/usePageMeta';
 
 export default function Login() {
+  usePageMeta({
+    title: 'Sign In',
+    description: 'Sign in to Harborlight Credit Union online banking to check balances, transfer money, deposit checks, and manage your cards.',
+    path: '/login',
+  });
   const { login } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();

@@ -1,8 +1,14 @@
 import '../../marketing.css';
 import PgHeader from '../../components/pg/PgHeader';
 import PgFooter from '../../components/pg/PgFooter';
+import { usePageMeta } from '../../utils/usePageMeta';
 
 export default function Terms() {
+  usePageMeta({
+    title: 'Terms & Conditions',
+    description: "The terms and conditions governing your use of Harborlight Credit Union's website and online banking services.",
+    path: '/terms',
+  });
   return (
     <div className="pub-site">
       <PgHeader />

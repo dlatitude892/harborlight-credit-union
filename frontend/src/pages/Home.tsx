@@ -8,8 +8,14 @@ import PgLoanSections from '../components/pg/PgLoanSections';
 import PgCustomerCare from '../components/pg/PgCustomerCare';
 import PgTrustAndCta from '../components/pg/PgTrustAndCta';
 import PgFooter from '../components/pg/PgFooter';
+import { usePageMeta } from '../utils/usePageMeta';
 
 export default function Home() {
+  usePageMeta({
+    title: 'Harborlight Credit Union — Banking Made Simpler',
+    description: 'Harborlight Credit Union is a member-owned, federally insured credit union offering checking, high-yield savings, loans, and modern online banking.',
+    path: '/',
+  });
   return (
     <div className="pub-site">
       <PgHeader />
