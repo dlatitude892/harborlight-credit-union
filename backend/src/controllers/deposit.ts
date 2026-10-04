@@ -88,7 +88,10 @@ export const approveDeposit = asyncHandler(async (req: Request, res: Response) =
       await deposit.save({ session });
 
       await new Transaction({
-        senderId: deposit.userId,
+        // The member *receives* this money - recording them as sender made
+        // the deposit show as -$ in their history and count as an expense.
+        senderId: req.user!._id,
+        recipientId: deposit.userId,
         method: 'CHECK_DEPOSIT',
         amount: deposit.amount,
         currency: 'USD',

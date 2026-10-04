@@ -12,6 +12,8 @@ export class ApiError extends Error {
 
 const getToken = () => localStorage.getItem('harborlight_token');
 
+export const SESSION_EXPIRED_EVENT = 'harborlight:session-expired';
+
 async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const token = getToken();
 
@@ -28,6 +30,13 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   const body = isJson ? await res.json() : undefined;
 
   if (!res.ok) {
+    // A 401 on a request that carried a token means the session expired or
+    // was invalidated server-side. Sign out cleanly instead of leaving the
+    // member on a page where every request now fails.
+    if (res.status === 401 && token) {
+      clearToken();
+      window.dispatchEvent(new Event(SESSION_EXPIRED_EVENT));
+    }
     throw new ApiError(res.status, body?.error || 'Something went wrong', body?.details);
   }
 

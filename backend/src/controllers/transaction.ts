@@ -59,12 +59,49 @@ const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString()
  * account to credit). Safe to call from both the OTP-verification flow and
  * the admin-approval flow because `fundsApplied` guards against double entry.
  */
+/**
+ * Who a deposit-type transaction pays. New deposits record the member as
+ * recipientId. Check deposits approved before that fix recorded the member
+ * as senderId with no recipient, so fall back to that for older records.
+ */
+export const getDepositRecipientId = (transaction: ITransaction) => transaction.recipientId ?? transaction.senderId;
+
 export const applyTransactionFunds = async (transaction: ITransaction) => {
   if (transaction.fundsApplied) return transaction;
 
   const session = await Transaction.startSession();
   try {
     await session.withTransaction(async () => {
+      // Deposits (admin credits, check deposits) are money entering
+      // Harborlight from outside - they only ever add to the receiving
+      // account. Nobody is debited. Previously admin credits ran through the
+      // transfer path below, which debited the *admin's own* balance by
+      // every credited amount and drove the bank-wide total negative.
+      if (transaction.transactionType === 'DEPOSIT') {
+        await User.findByIdAndUpdate(getDepositRecipientId(transaction), { $inc: { balance: transaction.amount } }, { session });
+        transaction.status = 'APPROVED';
+        transaction.fundsApplied = true;
+        transaction.approvedAt = new Date();
+        await transaction.save({ session });
+        return;
+      }
+
+      // Balance sufficiency is only checked once, when the transaction is
+      // first created - by the time an admin approves it, other
+      // transactions may have already been approved and spent that
+      // balance. Re-check here, inside the same session, so cumulative
+      // approvals can never drive a balance negative.
+      const sender = await User.findById(transaction.senderId).session(session);
+      if (!sender) {
+        throw new ApiError(404, 'Sender account not found');
+      }
+      if (sender.balance < transaction.amount) {
+        throw new ApiError(
+          400,
+          `Cannot approve - ${sender.firstName} ${sender.lastName} only has $${sender.balance.toFixed(2)} available, less than this $${transaction.amount.toFixed(2)} transfer.`
+        );
+      }
+
       await User.findByIdAndUpdate(transaction.senderId, { $inc: { balance: -transaction.amount } }, { session });
 
       if (transaction.method === 'MEMBER' && transaction.recipientId) {

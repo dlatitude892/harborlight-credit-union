@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useLanguage } from '../context/LanguageContext';
 import LanguageSwitcher from '../components/LanguageSwitcher';
@@ -18,6 +18,8 @@ export default function Login() {
   const { login } = useAuth();
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const signedOutReason = searchParams.get('reason');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -51,6 +53,13 @@ export default function Login() {
         <h1>{t('auth.welcomeBack')}</h1>
         <p>{t('auth.signInSubtitle')}</p>
 
+        {!error && signedOutReason && (
+          <div className="pg-form-notice">
+            {signedOutReason === 'timeout'
+              ? 'You were signed out after 15 minutes of inactivity. Please sign in again.'
+              : 'Your session has expired. Please sign in again.'}
+          </div>
+        )}
         {error && <div className="pg-form-error">{error}</div>}
 
         <form onSubmit={handleSubmit}>

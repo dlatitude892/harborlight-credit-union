@@ -98,7 +98,8 @@ export function downloadTransactionReceipt(transaction: Transaction, currentUser
   row('Type', transaction.transactionType);
 
   const senderAccountNum = typeof transaction.senderId === 'string' ? transaction.senderId : transaction.senderId.accountNumber;
-  const isOutgoing = senderAccountNum === currentUserAccountNumber;
+  // Deposits only ever add money to the member, so they're never outgoing.
+  const isOutgoing = transaction.transactionType !== 'DEPOSIT' && senderAccountNum === currentUserAccountNumber;
 
   row('From', partyName(transaction.senderId));
   if (transaction.method === 'MEMBER') {

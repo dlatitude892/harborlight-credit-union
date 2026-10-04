@@ -15,7 +15,7 @@ export const getDashboardSummary = asyncHandler(async (req: Request, res: Respon
     Transaction.aggregate([
       {
         $match: {
-          recipientId: userId,
+          $or: [{ recipientId: userId }, { senderId: userId, transactionType: 'DEPOSIT', recipientId: null }],
           status: 'APPROVED',
           createdAt: { $gte: thisMonthStart },
         },
@@ -26,6 +26,7 @@ export const getDashboardSummary = asyncHandler(async (req: Request, res: Respon
       {
         $match: {
           senderId: userId,
+          transactionType: { $ne: 'DEPOSIT' },
           status: 'APPROVED',
           createdAt: { $gte: thisMonthStart },
         },
@@ -35,7 +36,7 @@ export const getDashboardSummary = asyncHandler(async (req: Request, res: Respon
     Transaction.aggregate([
       {
         $match: {
-          recipientId: userId,
+          $or: [{ recipientId: userId }, { senderId: userId, transactionType: 'DEPOSIT', recipientId: null }],
           status: 'APPROVED',
           createdAt: { $gte: prevMonthStart, $lt: thisMonthStart },
         },
@@ -46,6 +47,7 @@ export const getDashboardSummary = asyncHandler(async (req: Request, res: Respon
       {
         $match: {
           senderId: userId,
+          transactionType: { $ne: 'DEPOSIT' },
           status: 'APPROVED',
           createdAt: { $gte: prevMonthStart, $lt: thisMonthStart },
         },

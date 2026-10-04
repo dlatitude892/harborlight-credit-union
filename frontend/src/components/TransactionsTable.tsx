@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { downloadTransactionReceipt } from '../utils/receipt';
 import { IconDownload } from './icons';
 import TransactionDetailModal from './TransactionDetailModal';
+import { isOutgoingFor } from '../utils/transactions';
 
 interface TransactionsTableProps {
   transactions: Transaction[];
@@ -73,8 +74,7 @@ export default function TransactionsTable({ transactions }: TransactionsTablePro
         </thead>
         <tbody>
           {transactions.map((txn) => {
-            const senderId = typeof txn.senderId === 'string' ? txn.senderId : txn.senderId._id;
-            const isOutgoing = senderId === user?.id;
+            const isOutgoing = isOutgoingFor(txn, user?.id);
             return (
               <tr key={txn._id} className="txn-clickable-row" onClick={() => setDetailTxn(txn)}>
                 <td>
@@ -112,8 +112,7 @@ export default function TransactionsTable({ transactions }: TransactionsTablePro
          tricks, so every row lines up predictably. */}
       <div className="txn-mobile-list">
         {transactions.map((txn) => {
-          const senderId = typeof txn.senderId === 'string' ? txn.senderId : txn.senderId._id;
-          const isOutgoing = senderId === user?.id;
+          const isOutgoing = isOutgoingFor(txn, user?.id);
           return (
             <div className="txn-mobile-card txn-clickable-row" key={txn._id} onClick={() => setDetailTxn(txn)}>
               <div className="txn-mobile-top">

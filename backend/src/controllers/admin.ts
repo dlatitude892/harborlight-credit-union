@@ -7,7 +7,7 @@ import AccountApplication from '../models/AccountApplication';
 import SavingsAccount from '../models/SavingsAccount';
 import asyncHandler from '../utils/asyncHandler';
 import { ApiError } from '../middleware/errorHandler';
-import { applyTransactionFunds } from './transaction';
+import { applyTransactionFunds, getDepositRecipientId } from './transaction';
 
 // Transactions at or above this amount are surfaced for manual review on the
 // Flagged Activity screen, in addition to any transaction sitting in a
@@ -45,7 +45,7 @@ export const updateTransactionNoteSchema = z.object({
 export const getAdminSummary = asyncHandler(async (req: Request, res: Response) => {
   const [memberCount, balanceAgg, pendingCount, underReviewCount, pendingApplicationsCount] = await Promise.all([
     User.countDocuments({ role: 'CUSTOMER' }),
-    User.aggregate([{ $group: { _id: null, total: { $sum: '$balance' } } }]),
+    User.aggregate([{ $match: { role: 'CUSTOMER' } }, { $group: { _id: null, total: { $sum: '$balance' } } }]),
     Transaction.countDocuments({ status: { $in: ['OTP_REQUIRED', 'OTP_VERIFIED', 'PENDING', 'ON_HOLD'] } }),
     User.countDocuments({ accountStatus: 'UNDER_REVIEW' }),
     AccountApplication.countDocuments({ status: { $in: ['SUBMITTED', 'UNDER_REVIEW', 'REQUIRES_ADDITIONAL_INFO'] } }),
@@ -398,12 +398,34 @@ export const editTransaction = asyncHandler(async (req: Request, res: Response) 
   if (amount !== undefined && amount !== transaction.amount) {
     if (transaction.fundsApplied) {
       const delta = amount - transaction.amount;
+      const isDeposit = transaction.transactionType === 'DEPOSIT';
+
+      // The account that loses money if the amount goes up: the sender for a
+      // transfer, or (for a deposit being reduced) the member who received it.
+      const debitedId = isDeposit ? getDepositRecipientId(transaction) : transaction.senderId;
+      const debitAmount = isDeposit ? -delta : delta;
+
       const session = await Transaction.startSession();
       try {
         await session.withTransaction(async () => {
-          await User.findByIdAndUpdate(transaction.senderId, { $inc: { balance: -delta } }, { session });
-          if (transaction.method === 'MEMBER' && transaction.recipientId) {
-            await User.findByIdAndUpdate(transaction.recipientId, { $inc: { balance: delta } }, { session });
+          if (debitAmount > 0) {
+            const account = await User.findById(debitedId).session(session);
+            if (!account || account.balance < debitAmount) {
+              throw new ApiError(
+                400,
+                `Can't make this change - it would take ${account ? `${account.firstName} ${account.lastName}'s` : 'the'} balance below zero.`
+              );
+            }
+          }
+
+          if (isDeposit) {
+            // Deposits only ever touched the recipient - nobody else to adjust.
+            await User.findByIdAndUpdate(getDepositRecipientId(transaction), { $inc: { balance: delta } }, { session });
+          } else {
+            await User.findByIdAndUpdate(transaction.senderId, { $inc: { balance: -delta } }, { session });
+            if (transaction.method === 'MEMBER' && transaction.recipientId) {
+              await User.findByIdAndUpdate(transaction.recipientId, { $inc: { balance: delta } }, { session });
+            }
           }
           transaction.amount = amount;
           await transaction.save({ session });

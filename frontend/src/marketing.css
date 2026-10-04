@@ -1102,3 +1102,15 @@
   width: 18px;
   height: 18px;
 }
+
+/* Neutral notice on the sign-in page (e.g. "signed out due to inactivity") */
+.pg-form-notice {
+  background: var(--pg-green-light, #eaf6ee);
+  border: 1px solid #bfe0cb;
+  color: var(--pg-green-dark, #14512f);
+  font-size: 13px;
+  padding: 10px 13px;
+  border-radius: var(--pg-radius-sm);
+  margin-bottom: 16px;
+  text-align: left;
+}

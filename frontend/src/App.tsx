@@ -1,8 +1,9 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { LanguageProvider } from './context/LanguageContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import SessionGuard from './components/SessionGuard';
 import AdminRoute from './components/AdminRoute';
 import ChatWidget from './components/ChatWidget';
 import Home from './pages/Home';
@@ -259,10 +260,16 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <ChatWidgetGate />
+      <SessionGuardGate />
     </AuthProvider>
       </LanguageProvider>
     </ThemeProvider>
   );
+}
+
+function SessionGuardGate() {
+  const { user } = useAuth();
+  return user ? <SessionGuard /> : null;
 }
 
 function ChatWidgetGate() {

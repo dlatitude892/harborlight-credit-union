@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
 import type { PaginatedTransactions, Transaction } from '../types';
 import { IconBell, IconCheck, IconClose, IconArrowDown } from './icons';
+import { isOutgoingFor } from '../utils/transactions';
 
 interface NotifItem {
   id: string;
@@ -87,8 +88,7 @@ export default function NotificationBell() {
         }
 
         res.transactions.forEach((txn) => {
-          const senderId = typeof txn.senderId === 'string' ? txn.senderId : txn.senderId._id;
-          const item = messageFor(txn, senderId === user.id);
+          const item = messageFor(txn, isOutgoingFor(txn, user.id));
           if (item) notifItems.push(item);
         });
 

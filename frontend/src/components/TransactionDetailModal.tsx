@@ -2,6 +2,7 @@ import type { Transaction, TransactionParty } from '../types';
 import { useAuth } from '../context/AuthContext';
 import { downloadTransactionReceipt } from '../utils/receipt';
 import { IconClose, IconDownload } from './icons';
+import { isOutgoingFor } from '../utils/transactions';
 
 interface TransactionDetailModalProps {
   transaction: Transaction;
@@ -39,8 +40,7 @@ const methodLabel = (method: Transaction['method']) => {
 export default function TransactionDetailModal({ transaction, onClose }: TransactionDetailModalProps) {
   const { user } = useAuth();
 
-  const senderId = typeof transaction.senderId === 'string' ? transaction.senderId : transaction.senderId._id;
-  const isOutgoing = senderId === user?.id;
+  const isOutgoing = isOutgoingFor(transaction, user?.id);
   const sender = partyName(transaction.senderId);
   const recipient = partyName(transaction.recipientId);
 

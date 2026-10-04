@@ -3056,3 +3056,22 @@ tr:hover td {
     }
   }
 }
+
+/* ==========================================================================
+   Inactivity sign-out warning (sits above chat, bottom nav, and other modals)
+   ========================================================================== */
+.session-warning-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(10, 20, 15, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: sidebar-backdrop-fade 0.2s ease;
+}
+.session-warning {
+  max-width: 400px;
+  width: 100%;
+}
